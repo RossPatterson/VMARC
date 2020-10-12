@@ -12,6 +12,7 @@ Because I can't guess how EBCDIC source files will be translated in a vintage 20
 John Fisher released his original code in 1989, long before the computing community became obsessed with licensing, before there was even a GNU Public License.  As a result, this repository is not covered by any Free Software or Open Source license, but is rather simply copyrighted code with rights granted from its original author.  John's original source file (VMARC ASSEMBLE) contains the following notice:
 
 > Copyright (c) 1989, 1990, John S. Fisher, Troy, NY.
+>
 > Copyright (C) 1980 Columbia University, Carl Klass and Jeff Damens, CUCCA User Services, 12/80
 >
 > Permission is granted to use, copy, and distribute this program in any form as long as (1) this notice of copyright and distribution policy remain intact, (2) the distribution is made without charge above and beyond any reasonable fee to cover costs in making and delivering the copy, and (3) no additional restrictions are im-posed, either as to distribution or as to use.
