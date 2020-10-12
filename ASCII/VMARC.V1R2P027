@@ -1,0 +1,8 @@
+./ R 00002549          $ 2559 10                      08/21/00 11:03:18         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.27' V1R2P027         
+./ I 01056000          $ 1056200 200                  08/21/00 11:03:18         
+         TM    WRKOPTN1,WRK1PACK   Reading an archive?         V1R2P027         
+         BO    *+L'*+4             No, skip.                   V1R2P027         
+         OI    WRKFLAGA,WRKAFIXI   Yes, treat like recfm F.    V1R2P027         
+./ R 03153559          $ 3153569 10                   08/21/00 11:03:18         
+PGMPTF   EQU   27                  Program modification level. V1R2P027         

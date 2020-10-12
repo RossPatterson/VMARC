@@ -1,0 +1,61 @@
+========================================================================
+VMARC Version 1.2.18                                         06 May 1993
+========================================================================
+This file describes the files that make up the VMARC, Version 1.2.18,
+distribution.  VMARC is a utility program for VM/CMS; it includes
+functions for data compaction and decompaction along with file
+archiving capabilities.
+ 
+Update V1R2P010, which is optional, adds the code needed to make VMARC
+a nucleus extension.  It was graciously provided by Ken Chamberlain.
+ 
+The file VMARC VMARC contains the program source, updates, some
+documentation, and the program executables.
+ 
+     Filename Filetype
+     -------- --------
+     VMARC    DESCRIBE    This file.
+     VMARC    WP          Documentation (WordPerfect 5.1).
+     VMARC    LISTWP      Documentation, formatted for line printer.
+     VMARC    MODULE      Program executable.
+     VMARCSEA MODULE      Self-extractor executable.
+     VMARC    HELPCMS     Help file.
+     VMARC    ASSEMBLE    Original program source, version 1.2.1.
+     VMARC    CNTRL       Update control file.
+     VMARCSEA CNTRL       Update control file for self-extractor.
+     VMARC    AUXUPD      Update auxiliary file.
+     VMARC    AUXUPDSE    Update auxiliary file for self-extractor.
+     VMARC    V1R2P002    Extra X'00' w/ STORE.
+     VMARC    V1R2P003    Accept output filemode number.
+     VMARC    V1R2P004    Treat ='s and *'s synonmously.
+     VMARC    V1R2P005    Fix LIST bug.
+     VMARC    V1R2P006    Fix another LIST bug.
+     VMARC    V1R2P007    Fix FREEMAIN problem.
+     VMARC    V1R2P008    VM/XA support for RDR files.
+     VMARC    V1R2P009    Fix missing base register problem.
+     VMARC    V1R2P010    (Optional) update for NUCEXT support.
+     VMARC    V1R2P011    S2 algorithm improvement.
+     VMARC    V1R2P012    Broaden fair-usage policy.
+     VMARC    V1R2PSEA    Create self-extracting program.
+     VMARC    V1R2P013    LIST/UNPACK self-extracting archives.
+     VMARC    V1R2P014    Conditional/prompted REPLACE option.
+     VMARC    V1R2P015    Handle held reader and disk-full condition.
+     VMARC    V1R2P016    Integrate VMARC and VMARCSEA source.
+     VMARC    V1R2P017    Accept lrecl > 65535.
+     VMARC    V1R2P018    Set file date with DMSPLU.
+ 
+Please note that the VMARC WP file is a word-processing file meant
+to be processed by WordPerfect 5.1 on an IBM-compatible DOS machine.
+It can be imported into other DOS-based word processors, as well,
+but no matter what, you will need to down-load the file to your
+DOS machine AS A BINARY FILE.  The VMARC LISTWP file is a version
+of the documentation formated for an EBCDIC line printer.
+ 
+ 
+--John S. Fisher
+  Bitnet:   FISHER@RPITSVM
+  Internet: FISHER@VM.ITS.RPI.EDU
+  USPS:     CII 3111
+            Rensselaer Polytechnic Institute
+            Troy,  NY   12180 3590
+  NYNEX:    (518) 276 2603

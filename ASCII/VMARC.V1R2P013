@@ -1,0 +1,52 @@
+./ R 00001960          $ 1970 10                      04/03/92 12:18:23 VMA00010
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.13' V1R2P013 VMA00020
+./ R 00173390 00175340 $ 173680 290                   04/03/92 12:18:23 VMA00030
+ DC C'Copyright (c) 1989-1992, John S. Fisher, Troy, NY.      '        XVMA00040
+                                                               V1R2P013 VMA00050
+ DC C'Copyright (C) 1980 Columbia University, Carl Klass and  '        XVMA00060
+                                                               V1R2P013 VMA00070
+ DC C'Jeff Damens, CUCCA User Services, 12/80                 '        XVMA00080
+                                                               V1R2P013 VMA00090
+./ R 00965000          $ 965490 490                   04/03/92 12:18:23 VMA00100
+         B     INSTART                                         V1R2P013 VMA00110
+./ R 01018000          $ 1018490 490                  04/03/92 12:18:23 VMA00120
+         B     INSTART                                         V1R2P013 VMA00130
+./ R 01071000          $ 1071490 490                  04/03/92 12:18:23 VMA00140
+         BZ    INSTART             --no.                       V1R2P013 VMA00150
+./ R 01074000          $ 1074490 490                  04/03/92 12:18:23 VMA00160
+         BNP   INSTART             --no.                       V1R2P013 VMA00170
+./ R 01076000          $ 1076490 490                  04/03/92 12:18:23 VMA00180
+         BNE   INSTART             --no.                       V1R2P013 VMA00190
+./ R 01079000          $ 1079490 490                  04/03/92 12:18:23 VMA00200
+*        B     INSTART                                         V1R2P013 VMA00210
+./ R 01081000 01083000 $ 1081090 90                   04/03/92 12:18:23 VMA00220
+***************************************************************V1R2P013 VMA00230
+*  Read the very first input record if UNPACK or LIST.         V1R2P013 VMA00240
+***************************************************************V1R2P013 VMA00250
+INSTART  DS    0H                                              V1R2P013 VMA00260
+         TM    WRKOPTN1,WRK1PACK   Creating an archive?        V1R2P013 VMA00270
+         BO    INFIRST             --yes, skip trash test.     V1R2P013 VMA00280
+         XC    WRKNDXIN,WRKNDXIN   Initialize buffer index.    V1R2P013 VMA00290
+         XC    WRKKODIN,WRKKODIN   Initialize input byte counteV1R2P013 VMA00300
+         OI    WRKFLAGA,WRKAOPNI   Mark input as open.         V1R2P013 VMA00310
+         BAL   RLINK,GETRECRD      Read the first input record.V1R2P013 VMA00320
+         BNZ   INNULLF             --Endfile.                  V1R2P013 VMA00330
+*  Allow for some "trash" at the beginning of an archive       V1R2P013 VMA00340
+*  we might be unpacking.  This is to accommodate VMARCSEA.    V1R2P013 VMA00350
+         L     R2,WRKIBUFF         Address of the input buffer.V1R2P013 VMA00360
+         USING HEADER,R2                                       V1R2P013 VMA00370
+         CLC   HDRID,=CL8':CFF'    Validate header.            V1R2P013 VMA00380
+         BNE   INSTART             --skip this record.         V1R2P013 VMA00390
+         B     OUTINIT                                         V1R2P013 VMA00400
+INNULLF  DS    0H                                              V1R2P013 VMA00410
+         LA    R2,WRKIPID          Address of input fileid.    V1R2P013 VMA00420
+         LINEDIT TEXT='No archive members found in ....................XVMA00430
+               ',SUB=(CHAR8A,(R2))                             V1R2P013 VMA00440
+         B     INENDF                                          V1R2P013 VMA00450
+***************************************************************V1R2P013 VMA00460
+*  Read the first input record of next/first file.             V1R2P013 VMA00470
+***************************************************************V1R2P013 VMA00480
+./ I 01091000          $ 1091500 500                  04/03/92 12:18:23 VMA00490
+INENDF   DS    0H                                              V1R2P013 VMA00500
+./ R 03152970          $ 3152980 10                   04/03/92 12:18:23 VMA00510
+PGMPTF   EQU   13                  Program modification level. V1R2P013 VMA00520

@@ -1,0 +1,17 @@
+./ R 00001999 00002000 $ 2289 290                     01/05/95 13:36:15         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.20' V1R2P020 0000228 
+         MACRO                                                 V1R2P020 0000257 
+./ R 00915000          $ 915070 70                    01/05/95 13:36:15         
+         BL    INFSTQLP            --Move further down chain.  V1R2P020 0091507 
+         BH    INFSTENQ            --Add new FIDDSECT here.    V1R2P020 0091514 
+*  If output fileids match and input filename/types match,     V1R2P020 0091521 
+*  there's no point handling this second file.  (It's probably V1R2P020 0091528 
+*  just a "shadow" from a read-only extension disk, anyway.)   V1R2P020 0091535 
+         CLC   FIDID(16),FIDID-FIDDSECT(R1)                    V1R2P020 0091542 
+         BL    INFSTQLP                                        V1R2P020 0091549 
+         BH    INFSTENQ                                        V1R2P020 0091556 
+         LR    R4,R1                                           V1R2P020 0091563 
+         FREEMAIN R,A=(R4),LV=FIDDLEN  Toss out new FIDDSECT.  V1R2P020 0091570 
+         B     INGETNXT            Try to find another.        V1R2P020 0091577 
+./ R 03153289          $ 3153379 90                   01/05/95 13:36:15         
+PGMPTF   EQU   20                  Program modification level. V1R2P020 0315337 

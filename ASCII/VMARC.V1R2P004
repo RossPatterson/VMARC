@@ -1,0 +1,28 @@
+./ R 00001490          $ 1500 100                     04/19/90 13:32:31         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.4'  V1R2P004         
+./ R 00548000          $ 548490 490                   04/19/90 13:32:31         
+         MVC   WRKOUTID,=CL18'*       *       *'  Output defaulV1R2P004         
+./ R 00551000          $ 551490 490                   04/19/90 13:32:31         
+         MVI   WRKOUTFM,C'A'       Change default.             V1R2P004         
+./ I 00606000          $ 606500 500                   04/19/90 13:32:31         
+         TR    WRKOUTID,STAREQU    Change ='s to *'s.          V1R2P004         
+./ R 00612000          $ 612490 490                   04/19/90 13:32:31         
+         CLC   WRKOUTFN,=CL8'*'    Only other possibility.     V1R2P004         
+./ R 00617000          $ 617490 490                   04/19/90 13:32:31         
+         CLC   WRKOUTFT,=CL8'*'    Only other possibility.     V1R2P004         
+./ R 00620000          $ 620490 490                   04/19/90 13:32:31         
+         CLC   WRKOUTFM,=CL8'*'    Validate filemode.          V1R2P004         
+./ I 00734000          $ 734100 100                   04/19/90 13:32:31         
+STAREQU  DS    0XL256                                          V1R2P004         
+         DC    256AL1(*-STAREQU)   Identity translate table.   V1R2P004         
+         ORG   STAREQU+C'='                                    V1R2P004         
+         DC    C'*'                Change all C'=' to C'*'.    V1R2P004         
+         ORG   STAREQU+L'STAREQU                               V1R2P004         
+./ R 00894000          $ 894490 490                   04/19/90 13:32:31         
+         CLI   FIDOUTFN,C'*'       Filename derived from input?V1R2P004         
+./ R 00897000          $ 897490 490                   04/19/90 13:32:31         
+         CLI   FIDOUTFT,C'*'       Filetype derived from input?V1R2P004         
+./ R 00900000          $ 900490 490                   04/19/90 13:32:31         
+         CLI   FIDOUTFM,C'*'       Filemode derived from input?V1R2P004         
+./ R 03152680          $ 3152700 100                  04/19/90 13:32:31         
+PGMPTF   EQU   4                   Program modification level. V1R2P004         

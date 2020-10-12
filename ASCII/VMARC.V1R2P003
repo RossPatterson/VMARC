@@ -1,0 +1,9 @@
+./ R 00001000          $ 1490 490                     04/19/90 13:32:31         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.3'  V1R2P003         
+./ D 00635000 00636000                                04/19/90 13:32:31         
+./ I 01129000          $ 1129200 200                  04/19/90 13:32:31         
+         CLI   WRKOUTFM+1,X'40'   Did user specify mode number?V1R2P003         
+         BE    *+L'*+6                  --no, preserve originalV1R2P003         
+         MVC   WRKFINFM+1(1),WRKOUTFM+1 --yes, override.       V1R2P003         
+./ R 03152490          $ 3152680 190                  04/19/90 13:32:31         
+PGMPTF   EQU   3                   Program modification level. V1R2P003         

@@ -1,0 +1,21 @@
+./ R 00001920          $ 1950 30                      09/09/91 10:33:30         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.9A' V1R2PA09 00001950
+./ R 00173000 00175000 $ 173390 390                   09/09/91 10:33:30         
+ DC C'Copyright (c) 1989, 1990, 1991, John S. Fisher, Troy,   '        X00173390
+                                                               V1R2PA09 00173780
+ DC C'NY.  Copyright (C) 1980 Columbia University, Carl Klass '        X00174170
+                                                               V1R2PA09 00174560
+ DC C'and Jeff Damens, CUCCA User Services, 12/80             '        X00174950
+                                                               V1R2PA09 00175340
+./ R 00741000          $ 741490 490                   09/09/91 10:33:30         
+         DC    AL1(C'0'+PGMPTF-10*(PGMPTF/10)),C'A'            V1R2PA09 00741000
+./ R 01537000          $ 1537190 190                  09/09/91 10:33:30         
+         TM    WRKOPTN2,WRK2DEVI   Input from a device?        V1R2PA09 01537190
+         BO    OUCREN              --yes, then no input file.  V1R2PA09 01537380
+         L     R3,WRKFIDPT         Current FIDDSECT.           V1R2PA09 01537570
+./ R 01546000          $ 1546490 490                  09/09/91 10:33:30         
+         MVC   FIDFIDPT-FIDDSECT(L'FIDFIDPT,R2),FIDFIDPT       V1R2PA09 01546490
+./ I 01549000          $ 1549500 500                  09/09/91 10:33:30         
+         DROP  R3                                              V1R2PA09 01549500
+./ R 03152950          $ 3152960 10                   09/09/91 10:33:30         
+PGMPTF   EQU   9                   Program modification level. V1R2PA09 03152960

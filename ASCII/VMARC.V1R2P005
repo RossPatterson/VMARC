@@ -1,0 +1,210 @@
+./ R 00001500          $ 1690 190                     05/11/90 13:26:02         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.5'  V1R2P005 00001690
+./ I 01821000          $ 1821100 100                  05/11/90 13:26:02         
+*                                                              V1R2P005 01821100
+*  For members with recfm=F we can find the end of the member  V1R2P005 01821200
+*  bt looking for an end-file code (X'000') at the end of any  V1R2P005 01821300
+*  record.  With recfm=V, the end-file code is also the end-   V1R2P005 01821400
+*  record code, so we must go through the compacted data, code V1R2P005 01821500
+*  by code.                                                    V1R2P005 01821600
+         CLI   WRKOPFV,C'V'        Is recfm=V?                 V1R2P005 01821700
+         BE    SKS2V               --no, must use unpack logic.V1R2P005 01821800
+*                                                              V1R2P005 01821900
+./ D 01830000 01831000                                05/11/90 13:26:02         
+./ R 01833000 01836000 $ 1834990 1990                 05/11/90 13:26:02         
+         LM    R4,R6,=A(X'000FFFFF',X'0000FFFF',X'00000FFF')   V1R2P005 01833000
+./ R 01838000 01839000 $ 1838590 590                  05/11/90 13:26:02         
+*  First record may not be big enough for endfile code.        V1R2P005 01838590
+         CH    R7,=H'2'            Long enough for endfile testV1R2P005 01839180
+./ D 01841000 01844000                                05/11/90 13:26:02         
+./ I 01869000          $ 1869010 10                   05/11/90 13:26:02         
+***************************************************************V1R2P005 01869010
+*  Skip archive member with recfm = V.                         V1R2P005 01869020
+***************************************************************V1R2P005 01869030
+SKS2V    DS    0H                                              V1R2P005 01869040
+         BAL   RLINK,S2INIT        Initialize string table.    V1R2P005 01869050
+         NI    WRKFLAGA,X'FF'-WRKAENDK  No end-records, yet.   V1R2P005 01869060
+*                                                              V1R2P005 01869070
+*  Register usage:                                             V1R2P005 01869080
+*        R5 =  Last code generated.                            V1R2P005 01869090
+*        R4 =  Second to last code generated.                  V1R2P005 01869100
+*        R8 => Previous node.                                  V1R2P005 01869110
+*        R7 => Current node.                                   V1R2P005 01869120
+*        R6 => Next node.                                      V1R2P005 01869130
+*                                                              V1R2P005 01869140
+         BAL   RLINK,GETCODE       Read first input code.      V1R2P005 01869150
+         LR    R4,R1               Remember the first code.    V1R2P005 01869160
+         B     SKS2VNX             Jump into main loop.        V1R2P005 01869170
+*                                                              V1R2P005 01869180
+SKS2VLP  DS    0H                                              V1R2P005 01869190
+         BAL   RLINK,S2ADDNEW      Extend string table.        V1R2P005 01869200
+         LR    R4,R5               Last code now is next to lasV1R2P005 01869210
+SKS2VNX  BAL   RLINK,GETCODE       Get next input code.        V1R2P005 01869220
+         LR    R5,R1               Remember the last code.     V1R2P005 01869230
+         SLL   R1,5                Compute index into string taV1R2P005 01869240
+         LR    R7,R1                                           V1R2P005 01869250
+         A     R7,WRKTABPT         Address of string table entrV1R2P005 01869260
+         USING STRDSECT,R7                                     V1R2P005 01869270
+*                                                              V1R2P005 01869280
+         SR    R8,R8               Initialize previous node poiV1R2P005 01869290
+*                                                              V1R2P005 01869300
+*  Drop down as far as possible along the leftmost path.       V1R2P005 01869310
+SKS2VLFT DS    0H                                              V1R2P005 01869320
+         L     R6,STRLEFT          Find left substring.        V1R2P005 01869330
+         ST    R8,STRLEFT          Remember path back up the trV1R2P005 01869340
+         LR    R8,R7               Advance pointers downward.  V1R2P005 01869350
+         LTR   R7,R6               ..                          V1R2P005 01869360
+         BP    SKS2VLFT                                        V1R2P005 01869370
+*                                                              V1R2P005 01869380
+*  We have hit the bottom.                                     V1R2P005 01869390
+         LR    R7,R8               Restore pointer to bottom noV1R2P005 01869400
+         L     R8,STRLEFT          Restore substring pointers. V1R2P005 01869410
+         ST    R6,STRLEFT          ..                          V1R2P005 01869420
+         LH    R1,STRCHAR          Character represented here. V1R2P005 01869430
+         CH    R1,=Y(KODENDR)      End-record code?            V1R2P005 01869440
+         BNE   SKS2VUNM            --no, continue.             V1R2P005 01869450
+         TM    WRKFLAGA,WRKAENDK   Two in a row?               V1R2P005 01869460
+         BO    S2EXIT              --yes, now we're done.      V1R2P005 01869470
+         OI    WRKFLAGA,WRKAENDK   Remember we've seen one.    V1R2P005 01869480
+         B     SKS2VUNW                                        V1R2P005 01869490
+SKS2VUNM DS    0H                                              V1R2P005 01869500
+         NI    WRKFLAGA,X'FF'-WRKAENDK  End-record not last.   V1R2P005 01869510
+*                                                              V1R2P005 01869520
+*  Retrace path up looking for the first unexplored right path.V1R2P005 01869530
+SKS2VUNW DS    0H                                              V1R2P005 01869540
+         LR    R6,R7               Advance pointers up the treeV1R2P005 01869550
+         LTR   R7,R8               ..                          V1R2P005 01869560
+         BNP   SKS2VLP                                         V1R2P005 01869570
+         TM    STRRIGHT,X'80'      Has right side been exploredV1R2P005 01869580
+         BZ    SKS2VDLT            --no, go do so now.         V1R2P005 01869590
+         NI    STRRIGHT,X'7F'      Clear right-side marker.    V1R2P005 01869600
+         L     R8,STRRIGHT         Restore substring pointers. V1R2P005 01869610
+         ST    R6,STRRIGHT         ..                          V1R2P005 01869620
+         B     SKS2VUNW            Continue upward ascent.     V1R2P005 01869630
+SKS2VDLT DS    0H                                              V1R2P005 01869640
+         L     R8,STRLEFT          Restore left-side pointers. V1R2P005 01869650
+         ST    R6,STRLEFT          ..                          V1R2P005 01869660
+         L     R6,STRRIGHT         Reverse right-side pointers.V1R2P005 01869670
+         ST    R8,STRRIGHT         ..                          V1R2P005 01869680
+         OI    STRRIGHT,X'80'      Mark it as right-side.      V1R2P005 01869690
+         LR    R8,R7               Advance down the right-side.V1R2P005 01869700
+         LR    R7,R6               ..                          V1R2P005 01869710
+         B     SKS2VLFT            Now, go down the left-side. V1R2P005 01869720
+         DROP  R7                                              V1R2P005 01869730
+         EJECT                                                 V1R2P005 01869740
+./ I 02254000          $ 2254100 100                  05/11/90 13:26:02         
+*                                                              V1R2P005 02254100
+*  For members with recfm=F we can find the end of the member  V1R2P005 02254200
+*  by looking for an end-file code (X'000') at the end of any  V1R2P005 02254300
+*  record.  With recfm=V, the end-file code is also the end-   V1R2P005 02254400
+*  record code, so we must go through the compacted data, code V1R2P005 02254500
+*  by code.                                                    V1R2P005 02254600
+         CLI   WRKOPFV,C'V'        Is recfm=V?                 V1R2P005 02254700
+         BE    SKLZWV              --no, must use unpack logic.V1R2P005 02254800
+*                                                              V1R2P005 02254900
+./ D 02263000 02264000                                05/11/90 13:26:02         
+./ R 02266000 02269000 $ 2267990 1990                 05/11/90 13:26:02         
+         LM    R4,R6,=A(X'000FFFFF',X'0000FFFF',X'00000FFF')   V1R2P005 01833000
+./ R 02271000 02272000 $ 2271590 590                  05/11/90 13:26:02         
+*  First record may not be big enough for endfile code.        V1R2P005 02271590
+         CH    R7,=H'2'            Long enough for endfile testV1R2P005 02272180
+./ D 02274000 02277000                                05/11/90 13:26:02         
+./ I 02302000          $ 2302010 10                   05/11/90 13:26:02         
+***************************************************************V1R2P005 02302010
+*  Skip member with recfm=V.                                   V1R2P005 02302020
+***************************************************************V1R2P005 02302030
+SKLZWV   DS    0H                                              V1R2P005 02302040
+         NI    WRKFLAGA,X'FF'-WRKAENDK  End-record not last.   V1R2P005 02302050
+         BAL   RLINK,LZWINIT       Initialize string table.    V1R2P005 02302060
+         L     R7,WRKTABST         Harmless place to overlay.  V1R2P005 02302070
+*                                                              V1R2P005 02302080
+SVGETNXT DS    0H                                              V1R2P005 02302090
+         BAL   RLINK,GETCODE       Get next input code.        V1R2P005 02302100
+         SLL   R1,4                                            V1R2P005 02302110
+         LA    R6,WRKLZWTB(R1)     Convert to LZW table entry. V1R2P005 02302120
+         USING LZWDSECT,R6                                     V1R2P005 02302130
+         SR    R5,R5                                           V1R2P005 02302140
+SVDOWNLP DS    0H                                              V1R2P005 02302150
+         L     R4,LZWPRED          Follow the predecessor chainV1R2P005 02302160
+         ST    R5,LZWPRED          Remember path back up.      V1R2P005 02302170
+         LR    R5,R6                                           V1R2P005 02302180
+         LTR   R6,R4                                           V1R2P005 02302190
+         BP    SVDOWNLP                                        V1R2P005 02302200
+         DROP  R6                                              V1R2P005 02302210
+         USING LZWDSECT,R5                                     V1R2P005 02302220
+         MVC   LZWCHAR-LZWDSECT(L'LZWCHAR,R7),LZWCHAR          V1R2P005 02302230
+SVUPLP   DS    0H                                              V1R2P005 02302240
+         LH    R1,LZWCHAR                                      V1R2P005 02302250
+         CH    R1,=Y(KODENDR)      End-record code?            V1R2P005 02302260
+         BNE   SVUNMARK            --no, continue.             V1R2P005 02302270
+         TM    WRKFLAGA,WRKAENDK   Two in a row?               V1R2P005 02302280
+         BO    LZWEXIT              --yes, now we're done.     V1R2P005 02302290
+         OI    WRKFLAGA,WRKAENDK   Remember we've seen one.    V1R2P005 02302300
+         B     SVUP                                            V1R2P005 02302310
+SVUNMARK DS    0H                                              V1R2P005 02302320
+         NI    WRKFLAGA,X'FF'-WRKAENDK  End-record not last.   V1R2P005 02302330
+*                                                              V1R2P005 02302340
+SVUP     DS    0H                                              V1R2P005 02302350
+         L     R4,LZWPRED          Follow chain back up.       V1R2P005 02302360
+         ST    R6,LZWPRED          Restore downward path.      V1R2P005 02302370
+         LR    R6,R5                                           V1R2P005 02302380
+         LTR   R5,R4                                           V1R2P005 02302390
+         BP    SVUPLP                                          V1R2P005 02302400
+         DROP  R5                                              V1R2P005 02302410
+*                                                              V1R2P005 02302420
+*  Start building follow-on entry for this code.               V1R2P005 02302430
+SVMAKE   DS    0H                                              V1R2P005 02302440
+         USING LZWDSECT,R6                                     V1R2P005 02302450
+         LH    R1,LZWREFKT         Increment reference counter.V1R2P005 02302460
+         LA    R1,1(,R1)                                       V1R2P005 02302470
+         STH   R1,LZWREFKT                                     V1R2P005 02302480
+         DROP  R6                                              V1R2P005 02302490
+         L     R7,WRKTABLE                                     V1R2P005 02302500
+SVADDLP  DS    0H                                              V1R2P005 02302510
+         LA    R7,LZWDLEN(,R7)     Candidate for follow-on entrV1R2P005 02302520
+         C     R7,WRKTABLM         Test for off end of table.  V1R2P005 02302530
+         BH    SVADDLP2                                        V1R2P005 02302540
+         USING LZWDSECT,R7                                     V1R2P005 02302550
+         OC    LZWREFKT,LZWREFKT   An unreferenced entry?      V1R2P005 02302560
+         BNZ   SVADDLP             --no, try next entry.       V1R2P005 02302570
+         B     SVADD                                           V1R2P005 02302580
+SVADDLP2 DS    0H                                              V1R2P005 02302590
+         L     R7,WRKTABST                                     V1R2P005 02302600
+SVADDLP3 DS    0H                                              V1R2P005 02302610
+         OC    LZWREFKT,LZWREFKT   An unreferenced entry?      V1R2P005 02302620
+         BZ    SVADD               --Yes, replace it.          V1R2P005 02302630
+         LA    R7,LZWDLEN(,R7)     Candidate for follow-on entrV1R2P005 02302640
+         C     R7,WRKTABLM         Test for off end of table.  V1R2P005 02302650
+         BNH   SVADDLP3                                        V1R2P005 02302660
+*                                                              V1R2P005 02302670
+         LH    R1,LZWREFKT-LZWDSECT(,R6)                       V1R2P005 02302680
+         BCTR  R1,0                                            V1R2P005 02302690
+         STH   R1,LZWREFKT-LZWDSECT(,R6)                       V1R2P005 02302700
+         B     SVGETNXT                                        V1R2P005 02302710
+SVADD    DS    0H                                              V1R2P005 02302720
+         L     R1,LZWPRED                                      V1R2P005 02302730
+         LTR   R1,R1               Is there a real predecessor?V1R2P005 02302740
+         BNP   SVADDSET                                        V1R2P005 02302750
+         LH    R0,LZWREFKT-LZWDSECT(,R1)                       V1R2P005 02302760
+         BCTR  R0,0                                            V1R2P005 02302770
+         STH   R0,LZWREFKT-LZWDSECT(,R1)                       V1R2P005 02302780
+SVADDSET DS    0H                                              V1R2P005 02302790
+         ST    R7,WRKTABLE                                     V1R2P005 02302800
+         ST    R6,LZWPRED          Predecessor is current code.V1R2P005 02302810
+         DROP  R7                                              V1R2P005 02302820
+         B     SVGETNXT                                        V1R2P005 02302830
+         EJECT                                                 V1R2P005 02302840
+./ R 02761000          $ 2761490 490                  05/11/90 13:26:02         
+         BNZ   GCEXITF             Return on end-file.         V1R2P005 02761490
+./ R 02782000          $ 2782490 490                  05/11/90 13:26:02         
+         BNZ   GCEXITF             Return on end-file.         V1R2P005 02782490
+./ I 02798000          $ 2798100 100                  05/11/90 13:26:02         
+*                                                              V1R2P005 02798100
+GCEXITF  DS    0H                                              V1R2P005 02798200
+         SR    R1,R1                                           V1R2P005 02798300
+         LTR   RLINK,RLINK                                     V1R2P005 02798400
+         BR    RLINK               CC ^= 0 -> endfile.         V1R2P005 02798500
+./ R 03152700          $ 3152790 90                   05/11/90 13:26:02         
+PGMPTF   EQU   5                   Program modification level. V1R2P005 03152790
+./ I 03233000          $ 3233500 500                  05/11/90 13:26:02         
+WRKAENDK EQU   B'01000000'         End-record code last seen.  V1R2P005 03233500

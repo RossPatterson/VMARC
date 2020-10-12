@@ -1,0 +1,21 @@
+./ R 00184000 00192000 $ 184390 390                   03/30/92 13:29:05 VMA00010
+*                                                                       VMA00020
+ DC C'Permission is also granted to incorporate this program  '         VMA00030
+ DC C'into other products, either as a tool used to package   '         VMA00040
+ DC C'a product or as an added function to a product, as long '         VMA00050
+ DC C'as the presence of this program in the product does not '         VMA00060
+ DC C'contribute to the selling price of the product in any   '         VMA00070
+ DC C'substantial way.                                        '         VMA00080
+*                                                                       VMA00090
+*  ...basically, please do not try to make money from something         VMA00100
+*  I developed then gave you for free.  Fair enough?                    VMA00110
+*                                                                       VMA00120
+*                           John S. Fisher                              VMA00130
+*                           Asst. Director, ECS                         VMA00140
+*                           3111 CII                                    VMA00150
+*                           Rensselaer Polytechnic Institute            VMA00160
+*                           Troy,  NY   12180-3590                      VMA00170
+*                                                                       VMA00180
+*                           FISHER@RPIECS.BITNET                        VMA00190
+*                           FISHER@VM.ECS.RPI.EDU                       VMA00200
+*                                                                       VMA00210

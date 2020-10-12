@@ -1,0 +1,28 @@
+V1R2P028 PJF V12P028  VM/370 R6 support (for Hercules et al.)                   
+V1R2P027 VMS V12P027  Tolerate RECFM=V archives for input.                      
+V1R2P026 VMS V120026  Ignore SFS zero-record files in VMARC PACK.               
+V1R2P025 VMS V120025  Allow assembly with older CMS MACLIBs.                    
+V1R2P024 VMS V120024  SSM ENABLE actually disables interrupts.                  
+V1R2P023 VMS V120023  Document the ASKREPLA/PROMPT/NEWREPLA options.            
+V1R2P022 jph V120022  Read specific record.  (File may be open by others)       
+V1R2P021 VMS V120021  Year 2000 date support (FSTCNTRY etc.)                    
+V1R2P020 RPI V120020  Skip duplicate input/output file pairs.                   
+V1R2P019 RPI V120019  Don't lose original archive when disk fills.              
+V1R2P018 RPI V120018  Set file date with DMSPLU.                                
+V1R2P017 RPI V120017  Accept lrecl > 65535.                                     
+V1R2P016 RPI V120016  Integrate VMARC and VMARCSEA source.                      
+V1R2P015 RPI V120015  Handle held reader and disk-full condition.               
+V1R2P014 RPI V120014  Conditional/prompted REPLACE option.                      
+V1R2P013 RPI V120013  LIST/UNPACK self-extracting archives.                     
+V1R2P012 RPI V120012  Broaden fair-usage policy.                                
+V1R2P011 RPI V120011  S2 algorithm improvement.                                 
+*1R2P010 RPI V120010  NUCEXT support.   <-- Change "*" to "V" to enable.        
+V1R2PA09 RPI V120009  Missing base register.                                    
+V1R2P008 RPI V120008  VM/XA support for RDR files.                              
+V1R2P007 RPI V120007  FREEMAIN with proper buffer size.                         
+V1R2P006 RPI V120006  LIST needs to divide by 3, not 4.                         
+V1R2P005 RPI V120005  LIST handling in error.                                   
+V1R2P004 RPI V120004  Treat ='s and *'s synonomously.                           
+V1R2P003 RPI V120003  Accept output file mode number override.                  
+V1R2P002 RPI V120002  Extra X'00' at end of STORE.  No path to help.            
+*1R2P001 RPI V120001  (Incorporated into base source.)                          

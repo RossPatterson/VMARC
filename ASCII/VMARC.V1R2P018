@@ -1,0 +1,40 @@
+./ R 00001997          $ 1998 1                       05/06/93 09:04:48 VMA00010
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.18' V1R2P018 VMA00020
+./ R 00173680          $ 173770 90                    05/06/93 09:04:48 VMA00030
+ DC C'Copyright (c) 1989-1993, John S. Fisher, Troy, NY.      '        XVMA00040
+./ R 00191020 00191410 $ 191210 190                   05/06/93 09:04:48 VMA00050
+*                           FISHER@RPIITS.BITNET               V1R2P018 VMA00060
+*                           FISHER@VM.ITS.RPI.EDU              V1R2P018 VMA00070
+./ R 01509000 01532000 $ 1509990 990                  05/06/93 09:04:48 VMA00080
+         BZ    OUCNOTIM                                        V1R2P018 VMA00090
+         MVC   WRKPLCMD,=CL8'DMSPLU'  Build Plist.             V1R2P018 VMA00100
+         MVC   WRKPLFN,=CL8'VMARC'   Source fileid.            V1R2P018 VMA00110
+         MVC   WRKPLFT,=CL8'CMSUT1'  ..                        V1R2P018 VMA00120
+         MVC   WRKPLFM(2),WRKFINFM   ..                        V1R2P018 VMA00130
+         MVC   WRKPLFM+2(6),=CL6' '                            V1R2P018 VMA00140
+         MVC   WRKPLDAT,=X'2021612020612020'                   V1R2P018 VMA00150
+         ED    WRKPLDAT(5),WRKADATI+1  Format mm/dd.           V1R2P018 VMA00160
+         OC    WRKPLDAT(2),=C'00'    Force leading digit.      V1R2P018 VMA00170
+         ED    WRKPLDAT+6(2),WRKADATI  Format yy.              V1R2P018 VMA00180
+         OC    WRKPLDAT+6(2),=C'00'  Force leading digits.     V1R2P018 VMA00190
+         MVC   WRKPLTIM,=X'20217A20207A2020'                   V1R2P018 VMA00200
+         ED    WRKPLTIM,WRKADATI+3  Format hh:mm:ss            V1R2P018 VMA00210
+         OC    WRKPLTIM(2),=C'00'  Force leading digits.       V1R2P018 VMA00220
+         MVC   WRKPLXFF,=8X'FF'    Plist fence.                V1R2P018 VMA00230
+         CMSCALL PLIST=WRKPLLST                                V1R2P018 VMA00240
+OUCNOTIM DS    0H                                              V1R2P018 VMA00250
+./ R 03152998          $ 3152999 1                    05/06/93 09:04:48 VMA00260
+PGMPTF   EQU   18                  Program modification level. V1R2P018 VMA00270
+./ I 03402000          $ 3402070 70                   05/06/93 09:04:48 VMA00280
+***************************************************************V1R2P018 VMA00290
+WRKPLLST DS    0D            DMSPLU plist.                     V1R2P018 VMA00300
+***************************************************************V1R2P018 VMA00310
+WRKPLCMD DS    CL8'DMSPLU'      (Undocumented CMS command.)    V1R2P018 VMA00320
+WRKPLID  DS    0CL24            Fileid.                        V1R2P018 VMA00330
+WRKPLFN  DS    CL8              ..filename.                    V1R2P018 VMA00340
+WRKPLFT  DS    CL8              ..filetype.                    V1R2P018 VMA00350
+WRKPLFM  DS    CL8              ..filemode.                    V1R2P018 VMA00360
+WRKPLPAT DS    0CL16            File creation time stamp.      V1R2P018 VMA00370
+WRKPLDAT DS    CL8'mm/dd/yy'    File creation date.            V1R2P018 VMA00380
+WRKPLTIM DS    CL8'hh:mm:ss'    File creation time.            V1R2P018 VMA00390
+WRKPLXFF DS    8X'FF'           Fence.                         V1R2P018 VMA00400

@@ -1,0 +1,68 @@
+./ R 00002529          $ 2539 10                      09/29/99 15:47:53         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.25' V1R2P025         
+./ I 00195490          $ 195540 50                    09/29/99 15:47:53         
+         GBLA  &CMSLVL                                         V1R2P025         
+         GBLC  &TEMP                                           V1R2P025         
+&CMSLVL  SETA  99                  Assume VERY recent CMS lvl. V1R2P025         
+         AIF   ('&SYSPARM'(1,3) NE 'CMS').SYSPNCM              V1R2P025         
+&TEMP    SETC  '&SYSPARM'(4,K'&SYSPARM)                        V1R2P025         
+&CMSLVL  SETA  &TEMP                      Get the CMS level.   V1R2P025         
+         MNOTE 0,'Assuming use of CMS level &CMSLVL MACLIBs'   V1R2P025         
+         PUNCH '* Assuming use of CMS level &CMSLVL MACLIBs'   V1R2P025         
+.SYSPNCM ANOP  ,                                               V1R2P025         
+./ I 00846500          $ 846900 400                   09/29/99 15:47:53         
+         AIF   (&CMSLVL LT 5).ENA001A                          V1R2P025         
+./ I 00847490          $ 847540 50                    09/29/99 15:47:53         
+         AGO   .ENA001D                                        V1R2P025         
+.ENA001A ANOP                                                  V1R2P025         
+         TM    X'5EA',X'80'        Is this an XA-mode machine? V1R2P025         
+         BO    ENA001B             Yes, use STNSM.             V1R2P025         
+         SSM   =X'00'              Disable in 370 mode.        V1R2P025         
+         B     ENA001C                                         V1R2P025         
+ENA001B  STNSM WRKTEMP,X'00'       Disable in XA mode.         V1R2P025         
+ENA001C  DS    0H                                              V1R2P025         
+.ENA001D ANOP  ,                                               V1R2P025         
+./ I 00848000          $ 848700 700                   09/29/99 15:47:53         
+         AIF   (&CMSLVL LT 5).ENA002A                          V1R2P025         
+./ I 00849490          $ 849540 50                    09/29/99 15:47:53         
+         AGO   .ENA002D                                        V1R2P025         
+.ENA002A ANOP                                                  V1R2P025         
+         TM    X'5EA',X'80'        Is this an XA-mode machine? V1R2P025         
+         BO    ENA002B             Yes, use STOSM.             V1R2P025         
+         SSM   =X'FF'              Enable in 370 mode.         V1R2P025         
+         B     ENA002C                                         V1R2P025         
+ENA002B  STOSM WRKTEMP,X'03'       Enable in XA mode.          V1R2P025         
+ENA002C  DS    0H                                              V1R2P025         
+.ENA002D ANOP  ,                                               V1R2P025         
+./ I 00923000          $ 923700 700                   09/29/99 15:47:53         
+         AIF   (&CMSLVL LT 5).ENA003A                          V1R2P025         
+./ I 00924490          $ 924540 50                    09/29/99 15:47:53         
+         AGO   .ENA003D                                        V1R2P025         
+.ENA003A ANOP                                                  V1R2P025         
+         TM    X'5EA',X'80'        Is this an XA-mode machine? V1R2P025         
+         BO    ENA003B             Yes, use STNSM.             V1R2P025         
+         SSM   =X'00'              Disable in 370 mode.        V1R2P025         
+         B     ENA003C                                         V1R2P025         
+ENA003B  STNSM WRKTEMP,X'00'       Disable in XA mode.         V1R2P025         
+ENA003C  DS    0H                                              V1R2P025         
+.ENA003D ANOP                                                  V1R2P025         
+./ I 00925000          $ 925700 700                   09/29/99 15:47:53         
+         AIF   (&CMSLVL LT 5).ENA004A                          V1R2P025         
+./ I 00926490          $ 926540 50                    09/29/99 15:47:53         
+         AGO   .ENA004D                                        V1R2P025         
+.ENA004A ANOP                                                  V1R2P025         
+         TM    X'5EA',X'80'        Is this an XA-mode machine? V1R2P025         
+         BO    ENA004B             Yes, use STOSM.             V1R2P025         
+         SSM   =X'FF'              Enable in 370 mode.         V1R2P025         
+         B     ENA004C                                         V1R2P025         
+ENA004B  STOSM WRKTEMP,X'03'       Enable in XA mode.          V1R2P025         
+ENA004C  DS    0H                                              V1R2P025         
+.ENA004D ANOP  ,                                               V1R2P025         
+./ R 03153539          $ 3153549 10                   09/29/99 15:47:53         
+PGMPTF   EQU   25                  Program modification level. V1R2P025         
+./ I 03203000          $ 3203500 500                  09/29/99 15:47:53         
+WRKTEMP  DS    D               Temporary doubleword.           V1R2P025         
+./ I 03448000          $ 3448200 200                  09/29/99 15:47:53         
+         AIF   (&CMSLVL GT 9).HASY2KF                          V1R2P025         
+FSTCNTRY EQU   X'08'               Date is 20xx, not 19xx.     V1R2P025         
+.HASY2KF ANOP                                                  V1R2P025         

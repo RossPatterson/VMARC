@@ -1,0 +1,905 @@
+:gdoc sec='VMARC Version 1.2'.
+.*********************************************************************
+.*  Code page 395 assignments for left and right bracket.
+.se lb = &x'b0
+.se rb = &x'6a
+.if SYSOUT ne PAGE .df xmpfont FONT &$CHAR(1)
+.*********************************************************************
+.*
+.* Updated from John Fisher's orginal SCRIPT file dated 3 April 1990
+.* by Ross Patterson.  Updated lines have revision codes.
+.*
+.*********************************************************************
+.rc 1 |
+:body.
+:h1.VMARC
+.sp 2
+.in +2m;.ir +2m;.bx left right;.sp
+.ce Copyright (c) 1989, 1990, John S. Fisher, Troy, NY.
+:p.Permission is granted to copy and distribute this documentation in 
+any form to any one as long as (1) this notice of copyright and 
+distribution policy remain intact, (2) the distribution is made without 
+charge above and beyond any reasonable fee to cover costs in making and 
+delivering the copy, and (3) no additional restrictions are imposed, 
+either as to use or as to distribution.
+:p.Permission is also granted to incorporate this program into other 
+products, either as a tool used to package a product or as an added 
+function to a product, as long as the presence of this program in the 
+product does not contribute to the selling price of the product in any 
+substantial way.
+.sp;.in -2m;.ir -2m;.bx off
+:p.Users are encouraged to correct bugs and enhance the product.
+Such modifications should be sent to the address below for inclusion in 
+subsequent releases.
+:p.Questions, comments, contributions may be sent to
+:dl termhi=0.
+:dt.BITNET
+:dd.FISHER@RPIECS
+:dt.Internet
+:dd.FISHER@VM.ECS.RPI.EDU
+:dt.USPS
+:dd.John S. Fisher
+.br;Engineering Computing Services
+.br;3147 CII
+.br;Rensselaer Polytechnic Institute
+.br;Troy, NY  12180 3590
+:edl.
+:p.Several changes since John Fisher's last :q.1.2.20:eq. release have 
+been coordinated by Ross Patterson, so you can also contact him at
+:dl termhi=0.
+:dt.Internet
+:dd.Ross.Patterson@Sterling.Com
+:dt.USPS
+:dd.Ross A. Patterson
+.br;Sterling Software, Inc.
+.br;1800 Alexander Bell Drive
+.br;Reston, VA 20191
+:edl.
+.*********************************************************************
+.pa
+:h3.Summary of Changes
+:p.This document describes VMARC version
+.rc 1 on
+1.2.15
+.rc 1 off
+and all subsequent versions until superceded.
+Version 1.2 of VMARC is substantially a total reorganization of 
+previous versions.  In addition, the following changes in function are 
+introduced.
+.*
+:h5.LIST function added
+:p.The members of an archive can be displayed by using the LIST 
+function of VMARC.  Uncompacting the archive to list the members is no 
+longer required.
+.*
+:h5.LOAD, DUMP, TLOAD, and TDUMP superceded
+:p.The device support for tapes and the virtual reader, punch and 
+printer has been incorporated into the PACK, UNPACK and LIST 
+functions.  Input or output devices are specified in the command-line 
+options rather than by distinct functions.
+The functions LOAD, DUMP, TLOAD, and TDUMP are still accepted by VMARC 
+for compatibility with previous releases, but may be withdrawn in 
+future releases.
+.*
+:h5.Member selection patterns
+:p.Both the LIST and UNPACK functions accept a file identifier pattern 
+to select archive members.
+.*
+:h5.Printer support
+:p.The virtual printer may be used as the output device for the PACK 
+function.  The LIST and UNPACK functions can process reader files that 
+were spooled from the virtual printer.
+:p.Version 1.1 of VMARC was never released.  In version 1.0 of VMARC, 
+the following changes were introduced.
+.*
+:h5.STORE option
+:p.An as-is :q.compaction method:eq. is available.  If STORE is 
+specified, then members are written to the archive without 
+modification.  Only structural information is added to each input 
+record to facilitate unpacking.
+.*
+:h5.Fileid patterns
+:p.Pattern matching for input files is enhanced to allow LISTFILE-style 
+patterns.
+.*
+:h5.Command usage help
+:p.If a question mark is entered in place of a VMARC command function, 
+the program displays a summary of command syntax.
+.*
+:h5.Output filemode specification
+:p.The UNPACK command allows the user to specify the filemode for the 
+disk where output files are to be written.
+.*
+:h5.Output block size
+:p.A BLOCK option has been added to let the user specify the length of 
+the blocks written as output.
+.*
+:h5.Tape support
+:p.Archives may be written to or read from tape.  Logical devices TAP1 
+through TAP4 are supported.
+.rc 1 on
+:h5.Greater control over file replacement
+:p.A new ASKREPLACE option has been added to prompt the user for 
+confirmation before replacing a file.  PROMPT is accepted as a synonym.
+:p.A new NEWREPLACE option has been added to only replace files when 
+the existing file is older.
+:h5.CMS-level assembly-time specification
+:p.Several CMS macros used by VMARC contain release-sensitive 
+information (e.g. the FSTCNTRY field did not exist before VM/ESA 1.2.1, 
+aka CMS level 10).  In order to allow a single source file to be built 
+for any level of CMS, a new SYSPARM CMSn option has been added to the 
+assembler parameters when building VMARC.
+:p.For example, if building VMARC for CMS level 4 (VM/SP 4) or earlier, 
+when the ENABLE macro did not exist, specify
+:xmp.
+VMFASM VMARC VMARC ( SYSPARM CMS4
+:exmp.
+:pc.to use equivalent facilities instead.
+:p.Likewise, when assembling against CMS macro libraries before CMS 
+level 10 (VM/ESA 1.2.1), specify
+:xmp.
+VMFASM VMARC VMARC ( SYSPARM CMS9
+:exmp.
+:pc.to avoid the missing definition for FSTCNTRY.
+.rc 1 off
+.*********************************************************************
+.pa
+:h3.Introduction
+:p.The VMARC program is a data compaction and file archiving utility 
+for VM/CMS.  It grew from a project to develop a replacement for the 
+CARD utility that would have similar file packaging abilities coupled 
+with superior data compaction.
+VMARC has three basic functions: PACK, UNPACK, and LIST.
+:p.The PACK function reads ordinary CMS files and produces the 
+equivalent file in a compacted form.  The compacted version of the file 
+is usually significantly smaller than the original, and therefore would 
+occupy less disk space or would require less time to transmit through a 
+network.
+VMARC allows more than one compacted file to be written to the same 
+output file.  The latter is called an :hp1.archive:ehp1.; the 
+individual compacted files are :hp1.members:ehp1. of the archive.
+:p.Although compacted files may make economical use of storage space or 
+network bandwidth, they are not directly usable by applications.  The 
+UNPACK function of VMARC reads archives created by PACK and regenerates 
+the original files from the archive members.
+:p.The LIST function scans archives created by PACK and reports the 
+names of each of the members.
+:p.Two data compaction methods are available, both of which give very 
+good performance for most applications.  Method LZW is a variant of the 
+well-known Lempel-Ziv-Welch algorithm, while S2 is a string-pair 
+algorithm.  The S2 method tends to produce a smaller result, but at the 
+expense of about twice the execution time during compaction.  (However, 
+there is no performance penalty when uncompacting S2 members; the speed 
+of the two methods are comparable.)  The following compaction results 
+are typical for the LZW and S2 methods.
+:xmp.
+.bx set 3i 4i 5i
+.tp 1.5i center 3.5i center 4.5i center 5.5i center
+.bf hi0
+&$tab.        &$tab.Raw size&$tab.Method LZW&$tab.Method S2
+&$tab.CMS file&$tab.(bytes)&$tab.(bytes)&$tab.(bytes)
+.tp 1.5i center 3.9i right  4.9i right  5.9i right
+.hr .5i 6i
+.pf
+&$tab. DMSSP MACLIB &$tab.2,760,000&$tab.  626,960&$tab.  510,240
+&$tab. SMART MODULE &$tab.1,686,748&$tab.   53,440&$tab.   46,160
+&$tab.PLICOMP TXTLIB&$tab.2,224,960&$tab.1,190,080&$tab.1,114,800
+.bx can
+:exmp.
+:pc.Since there are cases when neither of the two methods will produce 
+a result smaller than the original, VMARC offers a compaction option of 
+STORE.  No compaction is actually done in this case; the original file 
+data is written as-is to the output file with only some structural 
+information added.
+:p.In the initial phases of development of VMARC, the utility was 
+targeted as a replacement for the CARD program.  CARD has become quite 
+popular within Bitnet because of its ability to build archives for 
+distribution through an RSCS network.
+VMARC as has the same flavor of archiving capabilities coupled with 
+data compaction methods superior to the limited compaction offered by 
+CARD.  The following comparison was derived from the MAILER V2.04 
+distribution.
+:xmp.
+.bx set 3i 4i 5i
+.bf hi0
+.tp 1.5i center 3.5i center 4.5i center 5.5i center
+&$tab.        &$tab.CARD DUMP&$tab.Method LZW&$tab.Method S2
+&$tab.CMS file&$tab.(records)&$tab.(records)&$tab.(records)
+.tp 1.5i center 3.9i right  4.9i right  5.9i right
+.hr .5i 6i
+.pf
+&$tab. VMM204 package &$tab. 6,777&$tab.  3,875&$tab. 3,390
+&$tab. V2-MNT package &$tab. 4,752&$tab.  3,075&$tab. 2,867
+.bx can
+:exmp.
+.pa
+:h3.The PACK function
+:p.The PACK function creates archives a group of CMS files.
+The archives may be written to disk, tape, or the virtual punch or 
+printer.
+:xmp.
+.bx left right
+.bf hi0
+Disk-to-disk processing:
+.pf
+.bx
+ 
+VMARC  PACK  infileid  &lb. outfileid &rb. &lb. (  options.. &rb.
+ 
+.bx
+.bf hi0
+Disk-to-tape processing:
+.pf
+.bx
+ 
+VMARC  PACK  infileid  &rb. (  TAPn  &lb. options.. &rb.
+ 
+.bx
+.bf hi0
+Disk-to-punch processing:
+.pf
+.bx
+ 
+VMARC  PACK  infileid &rb. (  PUNCH  &lb. options.. &rb.
+ 
+.bx
+.bf hi0
+Disk-to-printer processing:
+.pf
+.bx
+ 
+VMARC  PACK  infileid &rb. (  PRINT  &lb. options.. &rb.
+ 
+.bx off
+:exmp.
+:pc.where
+:dl termhi=0 tsize=15.
+.*
+:dt.;.bf xmpfont;infileid;.pf
+:dd.specifies the input file(s) to be processed.  Asterisks and 
+percent-signs may be included in the input file identifier as wildcard 
+symbols to specify groups of CMS files.  This parameter is required.
+.*
+:dt.;.bf xmpfont;outfileid;.pf
+:dd.specifies the output file(s).  Equal-signs may be used in place of 
+the filename, filetype, or filemode to indicate that that part of the 
+file identifier should be derived from the input file identifier.  This 
+parameter, therefore, may specify a single file to hold all of the 
+compacted input files, or it may specify potentially a different file 
+for each.  This operand may not be used if output is to a device (tape, 
+punch or printer).  If output is to disk and the outfileid parameter is 
+omitted, output file(s) replace the input.
+.*
+:dt.;.bf xmpfont;options..;.pf
+:dd.specify processing options for the function.  The available options 
+are discussed separately in a later section of this document
+:edl.
+:p.The exact actions of the PACK function vary depending upon how the 
+file identifier parameters are specified, and which options are 
+requested.  A few examples may help clarify its behavior.
+:p.
+:h5.Example #1.
+The Fortran source code for some application needs to be sent to user 
+GEORGE on a system with RSCS node name NETNODE2.
+:xmp.
+SPOOL PUNCH RSCS
+TAG DEVICE PUNCH NETNODE2 GEORGE
+VMARC PACK * FORTRAN A ( PUNCH
+:exmp.
+:h5.Example #2.
+All FORTRAN source is to be placed into individual archives.  These 
+archives are to serve as on-line backups of the original.
+:xmp.
+VMARC PACK  * FORTRAN A  = VMARC A
+:exmp.
+:h5.Example #3.
+All modules and EXEC files from the B-disk are to be placed into a 
+single archive.  This archive may be a distribution package from some 
+product.
+:xmp.
+VMARC PACK  * MODULE B  PACKAGE VMARC A  (REPLACE
+VMARC PACK  * EXEC   B  PACKAGE VMARC A  (APPEND
+:exmp.
+:h5.Example #4.
+Development on some project has been completed, so all assembler source 
+files on the C-disk are to be replaced by their individual archives.
+This will reduce the amount of disk space used by the source, but keep 
+it on-line in a form where the original source can be recovered if 
+needed.
+:xmp.
+VMARC PACK  * ASSEMBLE C  = = = (REPLACE
+:exmp.
+:h5.Example #5.
+All files on the D-disk are backed-up to tape.
+:xmp.
+VMARC PACK  * * D  (TAP1 BLOCK 8196
+TAPE WTM 2
+:exmp.
+:h4.Usage Notes.
+:ol.
+:li.When appending to an existing archive, any value specified with the 
+BLOCK option is ignored.  The record length of the existing archive is 
+used instead.
+:li.Separate archives (with identical BLOCK specifications) can be 
+combined into a single archive by simple concatenation.  For example, 
+ARC2 VMARC A could be added to the end of ARC1 VMARC A by the COPYFILE 
+command:
+:xmp.
+COPYFILE  ARC2 VMARC A  ARC1 VMARC A  ( APPEND
+:exmp.
+:li.Since the output file name and type may be derived from the 
+corresponding parts of the input file names, it is possible for 
+multiple input files (specified by a pattern) to map into the same 
+output file.  For example,
+:xmp.
+VMARC  PACK  * * A  = VMARC A
+:exmp.
+could map the files TEST EXEC and TEST FORTRAN both to the output file 
+TEST VMARC.  When this type of situation occurs VMARC handles it in 
+what would seem to be the most natural fashion.  The first time a given 
+output file is used VMARC obeys the APPEND or REPLACE option if 
+specified.
+For the second and all subsequent uses of the output file, VMARC 
+unconditionally appends.
+:li.Similar to the behavior of the TAPE command, after the last archive 
+member is written to tape, VMARC writes a tape mark then backspaces 
+over the tape mark.  The tape file has end-of-file properly marked, and 
+the tape is positioned such that a second use of VMARC can append to 
+the tape file.
+If the user wishes to create separate tape files, it is recommended 
+that the TAPE WTM command be used between applications of VMARC.  That 
+is,
+:xmp.
+VMARC PACK ... ( TAP1
+TAPE WTM 1
+VMARC PACK ... ( TAP1
+:exmp.
+:pc.Whether one or many files are written, it is also recommended that 
+two tape marks be written after the last file.
+:eol.
+.*********************************************************************
+.pa
+:h3.The UNPACK Function
+:p.
+:p.The UNPACK function extracts CMS files from archives created by the 
+PACK function.  The archives can be read from tape, the reader, or from 
+disk files.
+:xmp.
+.bx left right
+.bf hi0
+Disk-to-disk processing:
+.pf
+.bx
+ 
+VMARC  UNPACK  infileid  &lb. pattern &rb. &lb. (  options.. &rb.
+ 
+.bx
+.bf hi0
+Tape-to-disk processing:
+.pf
+.bx
+ 
+VMARC  UNPACK  &lb. pattern &rb. (  TAPn  &lb. options.. &rb.
+ 
+.bx
+.bf hi0
+Reader-to-disk processing:
+.pf
+.bx
+ 
+VMARC  UNPACK  &lb. pattern &rb. (  READER  &lb. options.. &rb.
+ 
+.bx off
+:exmp.
+:pc.where
+:dl termhi=0.
+:dt.;.bf xmpfont;infileid;.pf
+:dd.specifies the CMS file identifier for the input archives.
+Asterisks and percents may be included in the filename, and filetype as 
+wildcards to specify groups of CMS files.  The asterisk may be used in 
+place of the file mode to specify all accessed disks.  This operand is 
+required when the input is from disk, and it is disallowed when input 
+is from a device.
+.*
+:dt.;.bf xmpfont;pattern;.pf
+:dd.specifies the filename and filetype of members that should be 
+extracted.  Asterisks and percent-signs may be used as pattern-matching 
+symbols.  The pattern parameter also specifies the filemode for the 
+disk where the extracted members should be written.  If omitted, VMARC 
+uses * * A for the pattern.
+.*
+:dt.;.bf xmpfont;options;.pf
+:dd.specify processing options for the function.  The available options 
+are discussed separately in a later section of this document
+:edl.
+:p.The output files created by UNPACK have the same name as the 
+original input files used when the archive was created.
+:h4.Notes.
+:ol.
+:li.When input is taken from the virtual card reader, the disposition 
+of the reader file when VMARC has completed processing depends on 
+several factors.  The normal action for VMARC is to purge the file from 
+the spool queue.  If the input is only partially processed, either 
+because of an error or because of a member selection pattern that 
+excludes one or more archive members, the file is retained for possible 
+reprocessing.  There are two ways that you can force VMARC to not purge 
+the reader file, even if it is processed completely without error.  You 
+can change the characteristics of your virtual reader to HOLD with the 
+CP SPOOL command, or you can specify the HOLD option to VMARC.
+Either way, VMARC will not purge the reader file at completion.
+:eol.
+.*********************************************************************
+.pa
+:h3.The LIST Function
+:p.
+:p.The LIST function reports the names of members of archives created 
+by the PACK function.  The archives can be read from tape
+.*, the reader,
+or from disk files.
+:xmp.
+.bx left right
+.bf hi0
+Disk processing:
+.pf
+.bx
+ 
+VMARC  LIST  infileid  &lb. pattern &rb. &lb. (  options.. &rb.
+ 
+.bx
+.bf hi0
+Tape processing:
+.pf
+.bx
+ 
+VMARC  LIST  &lb. pattern &rb. (  TAPn  &lb. options.. &rb.
+ 
+.bx
+.bf hi0
+Reader processing:
+.pf
+.bx
+ 
+VMARC  LIST  &lb. pattern &rb. (  READER  &lb. options.. &rb.
+ 
+.bx off
+:exmp.
+:pc.where
+:dl termhi=0.
+:dt.;.bf xmpfont;infileid;.pf
+:dd.specifies the CMS file identifier for the input archives.
+Asterisks and percent-signs may be included in the filename, and 
+filetype as wildcards to specify groups of CMS files.
+The asterisk may be used in place of the file mode to specify all 
+accessed disks.  This operand is required when the input is from disk, 
+and it is disallowed when input is from a device.
+.*
+:dt.;.bf xmpfont;pattern;.pf
+:dd.specifies the filename and filetype of members that should be 
+listed.  Asterisks and percent-signs may be used as pattern-matching 
+symbols.  The pattern parameter must include a disk mode letter, but 
+the letter has no significance.
+If omitted, VMARC uses * * A for the pattern.
+.*
+:dt.;.bf xmpfont;options;.pf
+:dd.specify processing options for the function.  The available options 
+are discussed separately in a later section of this document
+:edl.
+.*********************************************************************
+.pa
+:h3.Compatibility functions
+:p.Previous releases of VMARC supported four additional functions.
+These have since been superceded by options that may be used with the 
+PACK and UNPACK functions.
+However, for compatibility with the earlier releases, VMARC accepts the 
+older command syntax.  This support may be removed in future releases 
+of VMARC, so users are advised not to depend on the older commands.
+:p.The obsolete commands accepted by VMARC and the equivalent VMARC 
+command syntax follows.
+:xmp.
+.bx left right
+VMARC  DUMP  infileid  (  options...
+.bf hi0
+   is equivalent to
+.pf
+VMARC  PACK  infileid  (  PUNCH  options...
+.bx
+VMARC  TDUMP infileid  (  options...
+.bf hi0
+   is equivalent to
+.pf
+VMARC  PACK  infileid  (  TAP1  options...
+.bx
+VMARC  LOAD            (  options...
+.bf hi0
+   is equivalent to
+.pf
+VMARC  UNPACK          (  READER  REPLACE  options...
+.bx
+VMARC  TLOAD           (  options...
+.bf hi0
+   is equivalent to
+.pf
+VMARC  UNPACK          (  TAP1  REPLACE  options...
+.bx off
+:exmp.
+.*********************************************************************
+.pa
+:h3.Summary of VMARC Options
+:p.
+:h4.Options unique to the PACK function.
+:dl termhi=0 tsize=15.
+.*
+:dt.;.bf xmpfont;S2;.pf
+:dd.The S2 data compaction method is used.  This method usually 
+produces smaller results than the LZW method, but it requires more 
+processor time to produce.  (During uncompaction, the S2 and LZW 
+methods have comparable execution speed.)
+.*
+:dt.;.bf xmpfont;LZW;.pf
+:dd.The LZW data compaction method is used.  This method is used by 
+default if neither S2 nor STORE are specified.
+.*
+:dt.;.bf xmpfont;STOre;.pf
+:dd.Data compaction is not be used.  This option should be used for 
+those few cases where the LZW and S2 methods fail to produce a result 
+significantly smaller than the original.
+The result produced with the STORE option will always be slightly 
+larger than the original because of the overhead needed to record 
+structural information.
+.*
+:dt.;.bf xmpfont;APPend;.pf
+:dd.Allows output be appended to an existing archive.  If the output 
+file does not already exist, it is created.  If it does exist, it 
+should be an archive created by VMARC.  However, VMARC does not verify 
+that the output is a well-formed archive.
+The only test performed is that the output file must have a 
+fixed-length record structure.
+.*
+:dt.;.bf xmpfont;NOAPPend;.pf
+:dd.Restricts output from being appended to an existing archive.
+This is the default.
+.*
+:dt.;.bf xmpfont;BLock nnnn;.pf
+:dd.Requests that :hp1.nnnn:ehp1. be used for the record length of 
+output file.  For disk files, the default is 80; for tape, it is 4096.
+The option is not allowed for punch or printer output.
+.*
+:dt.;.bf xmpfont;PRinter;.pf
+:dd.Requests that output be directed to the virtual line printer rather 
+than to disk.
+.*
+:dt.;.bf xmpfont;PRt;.pf
+:dd.This is a synonym for PRINT.
+.*
+:dt.;.bf xmpfont;PUNch;.pf
+:dd.Requests that output be directed to the virtual card punch rather 
+than to disk.
+:edl.
+.******************************************************************
+:h4.Options unique to the UNPACK function.
+:dl termhi=0 tsize=15.
+.*
+:dt.;.bf xmpfont;OLDDate;.pf
+:dd.Requests that files extracted from an archive retain original 
+creation date.  This is the default.
+.*
+:dt.;.bf xmpfont;NEWDate;.pf
+:dd.Requests that files extracted from an archive be given a new 
+creation date.
+.*
+:dt.;.bf xmpfont;IGNore;.pf
+:dd.Requests that the original names of files extracted from an archive 
+be ignored.  Instead, the utility assigns names of the form FILEnnnn 
+VMARCOUT, where :hp1.nnnn:ehp1. are sequentially assigned numbers 
+beginning with 0001.
+.*
+:dt.;.bf xmpfont;NOIGNore;.pf
+:dd.Requests that the original names of files extracted from an archive 
+be used.  This is the default.
+.*
+:dt.;.bf xmpfont;READer;.pf
+:dd.Requests that input be taken from the virtual card reader rather 
+than from disk.
+.*
+:dt.;.bf xmpfont;RDR;.pf
+:dd.This is a synonym for READER.
+.*
+:dt.;.bf xmpfont;HOld;.pf
+:dd.Requests that the reader file be retained after processing.
+This option is meaningful only if the READER option is also specified.
+:edl.
+.******************************************************************
+:h4.Common options.
+:dl termhi=0 tsize=15.
+.*
+:dt.;.bf xmpfont;REPlace;.pf
+:dd.Allows output files to overwrite existing files.
+.*
+:dt.;.bf xmpfont;NOREPlace;.pf
+:dd.Restricts output files from overwriting existing files.  This is 
+the default behavior.
+.*
+.rc 1 on
+:dt.;.bf xmpfont;NEWrepla;.pf
+:dd.Files are replaced only  if the replacement is newer.
+.*
+:dt.;.bf xmpfont;ASKrepla;.pf
+:dd.Requires that the user give permission for a file to be replaced.
+.*
+:dt.;.bf xmpfont;PROMPT;.pf
+:dd.This is a synonym for ASKREPLA.
+.*
+.rc 1 off
+:dt.;.bf xmpfont;TRace;.pf
+:dd.Requests that the name and statistics for each file processed be 
+reported.  This is the default.
+.*
+:dt.;.bf xmpfont;NOTRace;.pf
+:dd.Requests that file names and statistics not be reported.
+.*
+:dt.;.bf xmpfont;FIfo;.pf
+:dd.Requests that trace output be added to the console stack rather 
+than displayed on the terminal.  Stacking order is first-in/first-out.
+.*
+:dt.;.bf xmpfont;LIfo;.pf
+:dd.Requests that trace output be added to the console stack rather 
+than displayed on the terminal.  Stacking order is last-in/first-out.
+.*
+:dt.;.bf xmpfont;Tap#;.pf
+:dd.Requests that output from a PACK operation, or input to an UNPACK 
+or LIST operation, be directed to a tape unit.  The option may be 
+specified as TAP1, TAP2, TAP3, or TAP4 to indicate which virtual tape 
+drive is used.
+:dt.;.bf xmpfont;Tape;.pf
+:dd.This is a synonym for TAP1.
+:edl.
+.*********************************************************************
+.pa
+:h3.Error messages
+:ul.
+.*
+:li.
+.bf xmpfont
+nnnnnnnn tttttttt mm. Bytes in=xxxxxxxx, bytes out=yyyyyyyy (zzzzzz%)
+.pf
+:p.After each archive member is processed VMARC generates a trace 
+message.  The message reports the member's original fileid and the 
+number of bytes read, the number of bytes written, and the ratio of the 
+two.  The message can be suppressed with the NOTRACE option on the 
+command line.  When packing, the ratio displayed in the message is the 
+compaction factor; the smaller the number, the higher the degree of 
+compaction achieved.  When unpacking, the ratio is the expansion 
+factor.  When listing the membership of an archive, the number of bytes 
+written and the ratio display as zero.
+.*
+:li.
+.bf xmpfont;Cannot append to input file.;.pf
+:p.The output file is the same as the input file, and APPEND was 
+specified.  Correct the output or input file name parameter, then retry 
+the command.
+.*
+:li.
+.bf xmpfont;Extraneous parameters on command line.;.pf
+:p.You entered more parameters on the command line then the VMARC 
+program expected.  For example, you may have included an input fileid 
+when unpacking from the virtual reader.  Eliminate the extra 
+parameters, then retry the command.
+.*
+:li.File VMARC MODULE mm will not be processed.
+:p.The input file name or pattern specified for an operation matched 
+the name of the VMARC program.  There really is no point to compacting 
+the VMARC program since the original is needed to extract it.
+The program ignores any such request.  If you really, really do want to 
+archive the VMARC program, copy the VMARC MODULE file to a file named 
+VMARCX MODULE.  Use VMARCX to compact the VMARC MODULE.
+.*
+:li.
+.bf xmpfont;Incomplete input file specification.;.pf
+:p.Either the CMS file name, file type or file mode was omitted for the 
+input file.  You must specify the output file's complete fileid.
+.*
+:li.
+.bf xmpfont;Incomplete output file specification.;.pf
+:p.Either the CMS file name, file type or file mode was omitted for the 
+output file.  You must specify the output file's complete fileid.
+.*
+:li.
+.bf xmpfont;Input file not found.;.pf
+:p.The file specified for input could not be located, or the pattern 
+specified for input did not match any files.  Verify that the input 
+file or pattern is entered correctly.  Retry the command.
+.*
+:li.Input fileid is invalid.
+:p.The file name, type or mode entered for the input file contains 
+invalid characters.  Verify that the input file name or pattern is 
+entered correctly.  Retry the command.
+.*
+:li.
+.bf xmpfont;Invalid header for compacted file.;.pf
+:p.An UNPACK or LIST function was requested on a file that does not 
+appear to be a file originally created by this utility.  Verify that 
+the input file is correctly specified, and retry the command.
+.*
+:li.
+.bf xmpfont;Invalid numeric value xxxxxxxx;.pf
+:p.VMARC was expecting to find a valid number immediately following a 
+command line option such as BLOCK.  What was found is either out of 
+range for the option (e.g. a block size larger than 32767) or not a 
+number at all.  Correct the command line, then retry the command.
+.*
+:li.
+.bf xmpfont;Invalid or conflicting option xxxxxxxx;.pf
+:p.An option specified on the command line for VMARC (after the open 
+parenthesis) is either not allowed for the function that was requested 
+(e.g., STORE with the LIST option) or in conflict with another option 
+that appears eariler on the command line (e.g. APPEND after REPLACE has 
+already been specified).  Correct the command options, then retry the 
+command.
+.*
+:li.
+.bf xmpfont;Missing numeric value for xxxxxxxx;.pf
+:p.VMARC was expecting to find a valid number immediately following a 
+command line option such as BLOCK, but the option was at the end of the 
+command line (so nothing follows it).  Correct the command line, then 
+retry the command.
+.*
+:li.
+.bf xmpfont;New version of VMARC required for this file.;.pf
+:p.An UNPACK function was requested on a file that was created by a 
+later version of the VMARC program.  You should obtain the latest 
+version of VMARC to process the file.
+.*
+:li.
+.bf xmpfont;No function specified.;.pf
+:p.No function was specified on the VMARC command line, or the function 
+specified was not recognized as valid.  The first parameter on the 
+command line must be PACK, UNPACK, or LIST.
+Correct the command line, then retry the command.
+.*
+:li.
+.bf xmpfont;Output file specification invalid.;.pf
+:p.The file name, type or mode entered for the output file contains 
+invalid characters.  Verify that the output file name or pattern is 
+entered correctly.  Retry the command.
+.*
+:li.Output disk full.
+:p.The disk where the output file is being written is full.  Free up 
+space for the output file by erasing unneeded files or by selecting a 
+different disk for output.
+.*
+:li.Output disk is read/only.
+:p.The output file cannot be written because the disk specified for 
+output is read only.  Either re-access the disk as writable, or select 
+a different disk for output.
+.*
+:li.
+.bf xmpfont;Output file already exists.;.pf
+:p.The output file specified already exists, and the REPLACE option was 
+not specified. Select a different name for the output file, or include 
+the REPLACE
+.rc 1 on
+ASKREPLA, or NEWREPLA
+.rc 1 off
+option on the command line if the existing file may be overwritten.
+ 
+.*
+:li.
+.bf xmpfont;Output file has variable record format.;.pf
+:p.VMARC was asked to append to an existing archive, but the output 
+file has variable length records.  All archives created by VMARC have 
+fixed length records.  Specify a different output file, then retry the 
+command.
+.*
+:li.
+.bf xmpfont;Output file specification invalid.;.pf
+:p.The file name, type or mode entered for the output file contains 
+invalid characters.  Verify that the output file name or pattern is 
+entered correctly.  Retry the command.
+.*
+:li.Permanent I/O error on input.
+:p.The program encountered an unexpected return code from a system 
+function.  Contact the your local systems staff for support.
+.*
+:li.Permanent I/O error on output.
+:p.The program encountered an unexpected return code from a system 
+function.  Contact the your local systems staff for support.
+.*
+:li.Punch not attached.
+:p.You specified the DUMP function, but your virtual machine does not 
+have a card punch device defined.  Correct your virtual machine 
+definition.  Retry the operation.
+.*
+:li.Reader not attached.
+:p.You specified the LOAD function, but your virtual machine does not 
+have a card reader device defined.  Correct your virtual machine 
+definition.  Retry the operation.
+.*
+:li.
+.bf xmpfont;Replace ....................;.pf
+:p.You specified the ASKREPLACE or PROMPT option, and the indicated 
+file already exists on the output disk.  Reply :q.Y:eq. to replace the 
+existing file, or anything else to avoid replacing it.
+.*
+:li.
+.bf xmpfont;Unexpected error....  RC=yy;.pf
+:p.The program encountered an unexpected return code from a system 
+function.  Contact the program author for support.
+.*
+:eul.
+.*********************************************************************
+.pa
+:h3.Installation and Maintenance
+:p.The VMARC utility program is available from a variety of sources, 
+with the principal distribution point being the LISTSERV server located 
+on the Bitnet node RPIECS.  New releases and fixes are always posted to 
+LISTSERV first.  If you have access to Bitnet you may obtain the most 
+current version of VMARC by issuing the following CMS command.
+:xmp.
+TELL LISTSERV AT RPIECS GET VMARC PACKAGE
+:exmp.
+.rc 1 on
+:p.The RPIECS site has VMARC up to level 1.2.20.  As of 14 October 
+1998, VMARC is now available on the web at 
+<http://www.geocities.com/SiliconValley/Garage/3246/>, with all updates 
+including those before and after level 1.2.21.
+.rc 1 off
+:pc.You eventually should receive three files in Netdata format.
+:dl termhi=0 tsize=18.
+:dt.;.bf xmpfont;VMARC MODULE;.pf
+:dd.the executable module for the VMARC utility.
+:dt.;.bf xmpfont;VMARC VMARC;.pf
+:dd.an archive of the program source and documentation
+.rc 1 on
+including all current updates.
+.rc 1 off
+:dt.;.bf xmpfont;VMARC $PACKAGE;.pf
+:dd.a :q.packing list:eq. of what is included in the VMARC PACKAGE
+.rc 1 on
+(not in the web site files).
+.rc 1 off
+:edl.
+:p.There may be additional files included in the package.  Before 
+proceeding further, examine the VMARC $PACKAGE file for a a complete 
+inventory of what is included in the package and any special 
+instructions or notes about handling the package.
+:p.If you are interested only in the (executable) program and its 
+documentation, you can extract just the documentation from the archive 
+using the command
+:xmp.
+VMARC UNPACK VMARC VMARC A * SCRIPT A (REPLACE
+:exmp.
+:p.For the complete VMARC package, including program source, you should 
+extract all members of the archive using the command
+:xmp.
+VMARC UNPACK VMARC VMARC A * * A (REPLACE
+:exmp.
+:p.The VMARC program is written in IBM/370 assembler language.
+Complete source is provided in the distribution package.  The update 
+facilities of CMS are exploited to manage source changes, so in 
+addition to the base assembler source, there are control and update 
+files as well.  To rebuild the executable module from source, use the 
+following commands,
+.rc 1 on
+adding "( SYSPARM CMSn" to the VMFASM command if you need to force 
+assembly for a specific CMS level.
+.rc 1 off
+:xmp.
+VMFASM VMARC VMARC
+.rc 1 on
+LOAD   VMARC (ORIGIN 20000
+.rc 1 off
+GENMOD VMARC
+:exmp.
+:pc.The VMFASM command is provided with CMS to support maintenance of 
+the operating system.  If it is unavailable to you, contact your local 
+systems programmer for assistance.
+:p.If you need to modify the VMARC program, please, :hp1.do not modify 
+the source directly:ehp1.  Instead, use the update management 
+facilities of XEDIT:
+:xmp.
+XEDIT VMARC ASSEMBLE A ( CTL VMARC
+:exmp.
+If the above command is used, XEDIT will keep all of your changes in a 
+separate :q.update:eq. file named VMARC UPDTLOCL.  The commands given 
+earlier to rebuild the module can still be used, and the new module 
+will include your changes.

@@ -1,0 +1,732 @@
+.cm The VMARC program is finely crafted by:
+.cm --John S. Fisher
+.cm   Bitnet:   FISHER@RPIECS
+.cm   Internet: FISHER@VM.ECS.RPI.EDU
+.cm   USPS:     CII 3111
+.cm             Rensselaer Polytechnic Institute
+.cm             Troy,  NY   12180 3590
+.cm   NYNEX:    (518) 276 2603
+.cm  ---------------------------------------
+.cm    This VMARC HELPCMS was produced from John S. Fisher's
+.cm    distribution VMARC SCRIPT (listing) on 14Jun1991 by:
+.cm    Bill Williams -- ETSU Systems Support
+.cm    Updated from the VMARC WP file on 29Jun1994 by:
+.cm    Bill Williams -- ETSU Systems Support
+.cm     East
+.cm     Tennessee             (615) 929-6853
+.cm     State
+.cm     University        <CMS2@ETSU.BITNET>
+.cm BRIEF section
+.cs 0 on
+=========================================================================
+¢|VMARC Version 1.2¢%
+¢|Copyright (c) 1989-1993, John S. Fisher, Troy, New York
+=========================================================================
+VMARC  is  a data  compaction  and  file  archiving utility  for  VM/CMS.
+Although  compacted files  may make  economical use  of storage  space or
+network bandwidth, they are not directly usable by applications.
+ 
+VMARC has three basic  commands: ¢|PACK, UNPACK,¢%and¢|LIST¢%
+ 
+The¢|PACK¢%  command reads ordinary  CMS files and produces  the equivalent
+file in  a compacted form. The  compacted version of the  file is usually
+significantly smaller than the original,  and therefore would occupy less
+disk space  or would  require less  time to  transmit through  a network.
+VMARC  allows more  than one  compacted file  to be  written to  the same
+output file. The latter is called an¢|archive¢%and the individual compacted
+files are¢|members¢%of the archive.
+ 
+The ¢|UNPACK¢%  command  of  VMARC  reads  archives  created  by  PACK  and
+regenerates the original files from the archive members.
+ 
+The¢|LIST¢% command scans archives created by PACK and reports the names of
+each of the members.
+ 
+Command syntax:
+ 
+¢|   VMARC  command  input  output  (  options...
+ 
+Invoking VMARC with no parameters or with a question mark (?) as the only
+parameter  will produce  a brief  display  of the  functions and  options
+acceptable.
+ 
+    For information  about Creating¢|Self-Extracting  Archives¢%see
+    the RELATED help.
+ 
+    (Use ¢|PF1¢% for complete HELP on VMARC)
+ 
+.cs 0 off
+.cm DESCRIPT section
+.cs 1 on
+=========================================================================
+¢|VMARC Version 1.2¢%
+¢|Copyright (c) 1989-1993, John S. Fisher, Troy, New York
+=========================================================================
+VMARC  is  a data  compaction  and  file  archiving utility  for  VM/CMS.
+Although  compacted files  may make  economical use  of storage  space or
+network bandwidth, they are not directly usable by applications.
+ 
+    For information  about Creating¢|Self-Extracting  Archives¢%see
+    the RELATED help.
+ 
+.cs 1 off
+.cm FORMAT section
+.cs 2 on
+ 
+  The syntax for the VMARC command is as follows:
+ 
+¢|   VMARC  command  input  output  (  options...
+ 
+.cs 2 off
+.cm PARMS section
+.cs 3 on
+-------------------------------------------------------------------------
+¢|The  VMARC command  functions  and their  parameters  are each  discussed
+¢|individually in this section, with complete descriptions.
+ 
+They appear in this order: ¢|PACK  UNPACK  LIST¢%
+-------------------------------------------------------------------------
+ 
+ ¢|THE PACK FUNCTION
+ ¢|-----------------
+ 
+ 
+  The  PACK  function  creates  archives a group of CMS files.
+  The archives may be written to disk, tape,  or  the  virtual
+  punch or printer.
+ 
+  +----------------------------------------------------------+
+  |¢|Disk-to-disk processing:                                ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  PACK  infileid  < outfileid > < (  options.. >   ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+  |¢|Disk-to-tape processing:                                ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  PACK  infileid  < (  TAPn  < options.. >>        ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+  |¢|Disk-to-punch processing:                               ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  PACK  infileid < (  PUNCH  < options.. >>        ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+  |¢|Disk-to-printer processing:                             ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  PACK  infileid < (  PRINT  < options.. >>        ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+ 
+  where
+ 
+ ¢|infileid      ¢%specifies  the input file(s) to be processed.
+                 Asterisks and percent-signs may  be  included
+                 in the input file identifier as wildcard sym-
+                 bols  to  specify  groups of CMS files.  This
+                 parameter is required.
+ 
+ ¢|outfileid     ¢%specifies the output  file(s).    Equal-signs
+                 may   be  used  in  place  of  the  filename,
+                 filetype, or filemode to indicate  that  that
+                 part of the file identifier should be derived
+                 from the input file identifier.  This parame-
+                 ter,  therefore, may specify a single file to
+                 hold all of the compacted input files, or  it
+                 may  specify potentially a different file for
+                 each.  This operand may not be used if output
+                 is to a device (tape, punch or printer).   If
+                 output is to disk and the outfileid parameter
+                 is omitted, output file(s) replace the input.
+ 
+  The  exact  actions of the PACK function vary depending upon
+  how the file identifier parameters are specified, and  which
+  options  are requested.
+ 
+ ¢|-------------------------------------------------------------
+ 
+ ¢|THE UNPACK FUNCTION
+ ¢|-------------------
+ 
+ 
+  The UNPACK function extracts CMS files from archives created
+  by  the  PACK function.  The archives can be read from tape,
+  the reader, or from disk files.
+ 
+  +----------------------------------------------------------+
+  |¢|Disk-to-disk processing:                                ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  UNPACK  infileid  < pattern > < (  options.. >   ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+  |¢|Tape-to-disk processing:                                ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  UNPACK  < pattern > (  TAPn  < options.. >       ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+  |¢|Reader-to-disk processing:                              ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  UNPACK  < pattern > (  READER  < options.. >     ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+ 
+  where
+ 
+ ¢|infileid ¢%specifies the CMS file identifier  for  the  input
+            archives.   Asterisks and percents may be included
+            in the filename,  and  filetype  as  wildcards  to
+            specify  groups of CMS files.  The asterisk may be
+            used in place of the file mode to specify all  ac-
+            cessed  disks.   This operand is required when the
+            input is from disk, and it is disallowed when  in-
+            put is from a device.
+ 
+ ¢|pattern  ¢%specifies  the  filename  and  filetype of members
+            that should be extracted.  Asterisks and  percent-
+            signs  may  be  used  as pattern-matching symbols.
+            The pattern parameter also specifies the  filemode
+            for the disk where the extracted members should be
+            written.    If  omitted,  VMARC uses * * A for the
+            pattern.
+ 
+  The output files created by UNPACK have the same name as the
+  original input files used when the archive was created.
+ 
+ ¢|-------------------------------------------------------------
+ 
+ ¢|THE LIST FUNCTION
+ ¢|-----------------
+ 
+ 
+  The  LIST  function reports the names of members of archives
+  created by the PACK function.  The archives can be read from
+  tape or from disk files.
+ 
+  +----------------------------------------------------------+
+  |¢|Disk processing:                                        ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  LIST  infileid  < pattern > < (  options.. >     ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+  |¢|Tape processing:                                        ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  LIST  < pattern > (  TAPn  < options.. >         ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+  |¢|Reader processing:                                      ¢%|
+  +----------------------------------------------------------+
+  |                                                          |
+  |¢|VMARC  LIST  < pattern > (  READER  < options.. >       ¢%|
+  |                                                          |
+  +----------------------------------------------------------+
+ 
+  where
+ 
+ ¢|infileid ¢%specifies the CMS file identifier  for  the  input
+            archives.   Asterisks and percent-signs may be in-
+            cluded in the filename, and filetype as  wildcards
+            to  specify groups of CMS files.  The asterisk may
+            be used in place of the file mode to  specify  all
+            accessed disks.  This operand is required when the
+            input  is from disk, and it is disallowed when in-
+            put is from a device.
+ 
+ ¢|pattern  ¢%specifies the filename  and  filetype  of  members
+            that  should  be  listed.   Asterisks and percent-
+            signs may be  used  as  pattern-matching  symbols.
+            The  pattern  parameter  must  include a disk mode
+            letter, but the letter has no  significance.    If
+            omitted, VMARC uses * * A for the pattern.
+ 
+.cs 3 off
+.cm OPTIONS section
+.cs 4 on
+ 
+ ¢|SUMMARY OF VMARC OPTIONS
+ ¢|------------------------
+ 
+  OPTIONS UNIQUE TO THE PACK FUNCTION.
+ 
+ 
+ ¢|S2            ¢%The  S2 data compaction method is used.  This
+                 method usually produces smaller results  than
+                 the   LZW   method,   but  it  requires  more
+                 processor time to produce.    (During  uncom-
+                 paction, the S2 and LZW methods have compara-
+                 ble execution speed.)
+ 
+ ¢|LZW           ¢%The LZW data compaction method is used.  This
+                 method  is  used by default if neither S2 nor
+                 STORE are specified.
+ 
+ ¢|STOre         ¢%Data compaction is not be used.  This  option
+                 should  be used for those few cases where the
+                 LZW and S2 methods fail to produce  a  result
+                 significantly smaller than the original.  The
+                 result  produced  with  the STORE option will
+                 always be slightly larger than  the  original
+                 because  of  the  overhead  needed  to record
+                 structural information.
+ 
+ ¢|APPend        ¢%Allows output be appended to an existing  ar-
+                 chive.    If the output file does not already
+                 exist, it is created.  If it does  exist,  it
+                 should  be an archive created by VMARC.  How-
+                 ever, VMARC does not verify that  the  output
+                 is a well-formed archive.  The only test per-
+                 formed  is  that  the output file must have a
+                 fixed-length record structure.
+ 
+ ¢|NOAPPend      ¢%Restricts output from being  appended  to  an
+                 existing archive.  This is the default.
+ 
+ ¢|BLock nnnn    ¢%Requests  that ¢|nnnn¢% be  used for the record
+                 length of output file.  For disk  files,  the
+                 default is 80; for tape, it is 4096.  The op-
+                 tion is not allowed for punch or printer out-
+                 put.
+ 
+ ¢|PRinter       ¢%Requests  that output be directed to the vir-
+                 tual line printer rather than to disk.
+ 
+ ¢|PRt           ¢%This is a synonym for PRINT.
+ 
+ ¢|PUNch         ¢%Requests that output be directed to the  vir-
+                 tual card punch rather than to disk.
+ 
+  OPTIONS UNIQUE TO THE UNPACK FUNCTION.
+ 
+ 
+ ¢|OLDDate       ¢%Requests that files extracted from an archive
+                 retain  original  creation date.  This is the
+                 default.
+ 
+ ¢|NEWDate       ¢%Requests that files extracted from an archive
+                 be given a new creation date.
+ 
+ ¢|IGNore        ¢%Requests that the original names of files ex-
+                 tracted from an archive be ignored.  Instead,
+                 the   utility   assigns  names  of  the  form
+                 FILEnnnn VMARCOUT,  where ¢|nnnn¢% are  sequen-
+                 tially assigned numbers beginning with 0001.
+ 
+ ¢|NOIGNore      ¢%Requests that the original names of files ex-
+                 tracted from an archive be used.  This is the
+                 default.
+ 
+ ¢|READer        ¢%Requests that input be taken from the virtual
+                 card reader rather than from disk.
+ 
+ ¢|RDR           ¢%This is a synonym for READER.
+ 
+ ¢|HOld          ¢%Requests that the reader file be retained af-
+                 ter  processing.    This option is meaningful
+                 only if the READER option is also specified.
+ 
+ 
+ 
+  COMMON OPTIONS.
+ 
+ 
+ ¢|REPlace       ¢%Allows output  files  to  overwrite  existing
+                 files.
+ 
+ ¢|NOREPlace     ¢%Restricts  output  files from overwriting ex-
+                 isting files.  This is the default behavior.
+ 
+|¢|ASKrepla      ¢%Requires that  the user give permission  for a
+|                file to be replaced.
+ 
+|¢|NEWrepla      ¢%Files are replaced only  if the replacement is
+|                newer.
+ 
+ ¢|TRace         ¢%Requests that the  name  and  statistics  for
+                 each file processed be reported.  This is the
+                 default.
+ 
+ ¢|NOTRace       ¢%Requests  that  file names and statistics not
+                 be reported.
+ 
+ ¢|FIfo          ¢%Requests that trace output be  added  to  the
+                 console  stack  rather  than displayed on the
+                 terminal.  Stacking order is  first-in/first-
+                 out.
+ 
+ ¢|LIfo          ¢%Requests  that  trace  output be added to the
+                 console stack rather than  displayed  on  the
+                 terminal.    Stacking order is last-in/first-
+                 out.
+ 
+ ¢|Tap#          ¢%Requests  that  output from a PACK operation,
+                 or input to an UNPACK or LIST  operation,  be
+                 directed  to  a tape unit.  The option may be
+                 specified as TAP1, TAP2, TAP3, or TAP4 to in-
+                 dicate which virtual tape drive is used.
+ 
+ ¢|Tape          ¢%This is a synonym for TAP1.
+ 
+ 
+ 
+.cs 4 off
+.cm NOTES section
+.cs 5 on
+ 
+    For information  about Creating¢|Self-Extracting  Archives¢%see
+    the RELATED help.
+ 
+ ¢|USAGE NOTES -- PACK
+ 
+  1.  When  appending to an existing archive, any value speci-
+      fied with the BLOCK  option  is  ignored.    The  record
+      length of the existing archive is used instead.
+ 
+  2.  Separate  archives (with identical BLOCK specifications)
+      can be combined into a single archive by simple  concat-
+      enation.    For  example, ARC2 VMARC A could be added to
+      the end of ARC1 VMARC A by the COPYFILE command:
+ 
+        COPYFILE  ARC2 VMARC A  ARC1 VMARC A  ( APPEND
+ 
+  3.  Since  the output file name and type may be derived from
+      the corresponding parts of the input file names,  it  is
+      possible  for  multiple input files (specified by a pat-
+      tern) to map into the same output file.  For example,
+ 
+        VMARC  PACK  * * A  = VMARC A
+ 
+      could map the files TEST EXEC and TEST FORTRAN  both  to
+      the output file TEST VMARC.  When this type of situation
+      occurs  VMARC  handles  it  in what would seem to be the
+      most natural fashion.   The first time  a  given  output
+      file is used VMARC obeys the APPEND or REPLACE option if
+      specified.    For  the second and all subsequent uses of
+      the output file, VMARC unconditionally appends.
+ 
+  4.  Similar to the behavior of the TAPE command,  after  the
+      last  archive  member is written to tape, VMARC writes a
+      tape mark then backspaces over the tape mark.  The  tape
+      file  has  end-of-file  properly marked, and the tape is
+      positioned such that a second use of VMARC can append to
+      the tape file.  If the user wishes  to  create  separate
+      tape  files, it is recommended that the TAPE WTM command
+      be used between applications of VMARC.  That is,
+ 
+        VMARC PACK ... ( TAP1
+        TAPE WTM 1
+        VMARC PACK ... ( TAP1
+ 
+      Whether one or many files are written, it is also recom-
+      mended that two tape marks be  written  after  the  last
+      file.
+ 
+ ¢|PACK Examples:¢%
+  EXAMPLE #1. The Fortran source  code  for  some  application
+  needs  to  be sent to user GEORGE on a system with RSCS node
+  name NETNODE2.
+ 
+    SPOOL PUNCH RSCS
+    TAG DEVICE PUNCH NETNODE2 GEORGE
+    VMARC PACK * FORTRAN A ( PUNCH
+ 
+  EXAMPLE #2. All FORTRAN source is to be placed into individ-
+  ual archives.  These archives are to serve as on-line  back-
+  ups of the original.
+ 
+    VMARC PACK  * FORTRAN A  = VMARC A
+ 
+  EXAMPLE  #3.  All modules and EXEC files from the B-disk are
+  to be placed into a single archive.  This archive may  be  a
+  distribution package from some product.
+ 
+    VMARC PACK  * MODULE B  PACKAGE VMARC A  (REPLACE
+    VMARC PACK  * EXEC   B  PACKAGE VMARC A  (APPEND
+ 
+  EXAMPLE  #4. Development on some project has been completed,
+  so all assembler source files on the C-disk are  to  be  re-
+  placed  by  their individual archives.  This will reduce the
+  amount of disk space used by the source, but keep it on-line
+  in a form where the original  source  can  be  recovered  if
+  needed.
+ 
+    VMARC PACK  * ASSEMBLE C  = = = (REPLACE
+ 
+  EXAMPLE #5. All files on the D-disk are backed-up to tape.
+ 
+    VMARC PACK  * * D  (TAP1 BLOCK 8196
+    TAPE WTM 2
+ 
+ ¢|USAGE NOTES -- UNPACK
+ 
+ 
+  1.  When input is taken from the virtual  card  reader,  the
+      disposition  of the reader file when VMARC has completed
+      processing depends  on  several  factors.    The  normal
+      action  for  VMARC  is  to purge the file from the spool
+      queue.  If the input is only partially processed, either
+      because  of  an  error  or because of a member selection
+      pattern that excludes one or more archive  members,  the
+      file  is  retained for possible reprocessing.  There are
+      two ways that you can  force  VMARC  to  not  purge  the
+      reader  file, even if it is processed completely without
+      error.  You can change the characteristics of your  vir-
+      tual  reader  to  HOLD with the CP SPOOL command, or you
+      can specify the HOLD option to VMARC.  Either way, VMARC
+      will not purge the reader file at completion.
+ 
+ 
+¢|Special notes on VMARC¢%
+¢|----------------------¢%
+ 
+Two  data  compaction  methods  are available, both of which
+give very good performance for most  applications.    Method
+LZW  is  a  variant of the well-known Lempel-Ziv-Welch algo-
+rithm, while S2 is a string-pair algorithm.   The S2  method
+tends  to  produce  a  smaller result, but at the expense of
+about twice the execution time during compaction.  (However,
+there is no performance penalty when  uncompacting  S2  mem-
+bers;  the  speed  of  the two methods are comparable.)  The
+following compaction results are typical for the LZW and  S2
+methods.
+ 
+                             | Raw size|Method LZ|Method S2
+           CMS file          | (bytes) | (bytes) | (bytes)
+    -------------------------+---------+---------+----------
+         DMSSP MACLIB        |2,760,000|  626,960|  510,240
+         SMART MODULE        |1,686,748|   53,440|   46,160
+        PLICOMP TXTLIB       |2,224,960|1,190,080|1,114,800
+ 
+Since  there  are cases when neither of the two methods will
+produce a result smaller than the original, VMARC  offers  a
+compaction  option of STORE.  No compaction is actually done
+in this case; the original file data is written as-is to the
+output file with only some structural information added.
+ 
+.cs 5 off
+.cm ERRORS section
+.cs 6 on
+ 
+ ¢|ERROR MESSAGES
+ ¢|--------------
+ 
+ 
+ ¢|o¢%  nnnnnnnn   tttttttt   mm.   Bytes   in=xxxxxxxx,   bytes
+      out=yyyyyyyy (zzzzzz%)
+ 
+      After each archive member is processed VMARC generates a
+      trace message.  The message reports  the  member's  ori-
+      ginal fileid and the number of bytes read, the number of
+      bytes  written,  and  the ratio of the two.  The message
+      can be suppressed with the NOTRACE option on the command
+      line.  When packing, the ratio displayed in the  message
+      is  the  compaction  factor; the smaller the number, the
+      higher the degree of compaction achieved.  When  unpack-
+      ing,  the  ratio  is the expansion factor.  When listing
+      the membership of an archive, the number of bytes  writ-
+      ten and the ratio display as zero.
+ 
+ ¢|o¢%  Cannot append to input file.
+ 
+      The  output  file is the same as the input file, and AP-
+      PEND was specified.  Correct the output  or  input  file
+      name parameter, then retry the command.
+ 
+ ¢|o¢%  Extraneous parameters on command line.
+ 
+      You entered more parameters on the command line then the
+      VMARC  program expected.   For example, you may have in-
+      cluded an input fileid when unpacking from  the  virtual
+      reader.   Eliminate the extra parameters, then retry the
+      command.
+ 
+ ¢|o¢%  File VMARC MODULE mm will not be processed.
+ 
+      The input file name or pattern specified for  an  opera-
+      tion  matched  the name of the VMARC program.  There re-
+      ally is no point to compacting the VMARC  program  since
+      the  original  is needed to extract it.  The program ig-
+      nores any such request.  If you really, really  do  want
+      to archive the VMARC program, copy the VMARC MODULE file
+      to  a  file  named VMARCX MODULE.  Use VMARCX to compact
+      the VMARC MODULE.
+ 
+ ¢|o¢%  Incomplete input file specification.
+ 
+      Either the CMS file name, file type  or  file  mode  was
+      omitted for the input file.  You must specify the output
+      file's complete fileid.
+ 
+ ¢|o¢%  Incomplete output file specification.
+ 
+      Either  the  CMS  file  name, file type or file mode was
+      omitted for the output file.  You must specify the  out-
+      put file's complete fileid.
+ 
+ ¢|o¢%  Input file not found.
+ 
+      The  file  specified  for input could not be located, or
+      the pattern specified for input did not match any files.
+      Verify that the input file or pattern  is  entered  cor-
+      rectly.  Retry the command.
+ 
+ ¢|o¢%  Input fileid is invalid.
+ 
+      The  file  name, type or mode entered for the input file
+      contains invalid characters.  Verify that the input file
+      name or pattern is entered correctly.   Retry  the  com-
+      mand.
+ 
+ ¢|o¢%  Invalid header for compacted file.
+ 
+      An  UNPACK or LIST function was requested on a file that
+      does not appear to be a file originally created by  this
+      utility.  Verify that the input file is correctly speci-
+      fied, and retry the command.
+ 
+ ¢|o¢%  Invalid numeric value xxxxxxxx
+ 
+      VMARC  was  expecting to find a valid number immediately
+      following a command line option such as BLOCK.  What was
+      found is either out of range  for  the  option  (e.g.  a
+      block  size  larger  than 32767) or not a number at all.
+      Correct the command line, then retry the command.
+ 
+ ¢|o¢%  Invalid or conflicting option xxxxxxxx
+ 
+      An option specified on the command line for VMARC (after
+      the open parenthesis) is  either  not  allowed  for  the
+      function  that  was requested (e.g., STORE with the LIST
+      option) or in conflict with another option that  appears
+      eariler  on  the command line (e.g. APPEND after REPLACE
+      has  already  been  specified).    Correct  the  command
+      options, then retry the command.
+ 
+ ¢|o¢%  Missing numeric value for xxxxxxxx
+ 
+      VMARC  was  expecting to find a valid number immediately
+      following a command line option such as BLOCK,  but  the
+      option  was  at  the end of the command line (so nothing
+      follows it).  Correct the command line, then  retry  the
+      command.
+ 
+ ¢|o¢%  New version of VMARC required for this file.
+ 
+      An UNPACK function was requested on a file that was cre-
+      ated  by  a  later  version  of the VMARC program.   You
+      should obtain the latest version of VMARC to process the
+      file.
+ 
+ ¢|o¢%  No function specified.
+ 
+      No  function was specified on the VMARC command line, or
+      the function specified was not recognized as valid.  The
+      first parameter on the command line must  be  PACK,  UN-
+      PACK, or LIST.  Correct the command line, then retry the
+      command.
+ 
+ ¢|o¢%  Output file specification invalid.
+ 
+      The  file name, type or mode entered for the output file
+      contains invalid characters.   Verify  that  the  output
+      file  name  or  pattern is entered correctly.  Retry the
+      command.
+ 
+ ¢|o¢%  Output disk full.
+ 
+      The disk where the output file is being written is full.
+      Free up space for the output file  by  erasing  unneeded
+      files or by selecting a different disk for output.
+ 
+ ¢|o¢%  Output disk is read/only.
+ 
+      The output file cannot be written because the disk spec-
+      ified  for  output  is read only.   Either re-access the
+      disk as writable, or select a different disk for output.
+ 
+ ¢|o¢%  Output file already exists.
+ 
+      The  output  file  specified  already  exists,  and  the
+      REPLACE  option was  not specified.  Select a  different
+|     name  for  the  output  file, or  include  the  REPLACE,
+|     ASKrepla, or NEWrepla option on  the command line if the
+      existing file may be overwritten.
+ 
+ ¢|o¢%  Output file has variable record format.
+ 
+      VMARC  was  asked  to append to an existing archive, but
+      the output file has variable length records.    All  ar-
+      chives  created  by  VMARC  have  fixed  length records.
+      Specify a different output file, then retry the command.
+ 
+ ¢|o¢%  Output file specification invalid.
+ 
+      The file name, type or mode entered for the output  file
+      contains  invalid  characters.    Verify that the output
+      file name or pattern is entered correctly.    Retry  the
+      command.
+ 
+ ¢|o¢%  Permanent I/O error on input.
+ 
+      The program encountered an unexpected return code from a
+      system  function.   Contact the your local systems staff
+      for support.
+ 
+ ¢|o¢%  Permanent I/O error on output.
+ 
+      The program encountered an unexpected return code from a
+      system  function.   Contact the your local systems staff
+      for support.
+ 
+ ¢|o¢%  Punch not attached.
+ 
+      You specified the DUMP function, but  your  virtual  ma-
+      chine  does  not have a card punch device defined.  Cor-
+      rect  your  virtual  machine  definition.    Retry   the
+      operation.
+ 
+ ¢|o¢%  Reader not attached.
+ 
+      You  specified  the  LOAD function, but your virtual ma-
+      chine does not have a card reader device defined.   Cor-
+      rect   your  virtual  machine  definition.    Retry  the
+      operation.
+ 
+ ¢|o¢%  Unexpected error....  RC=yy
+ 
+      The program encountered an unexpected return code from a
+      system function.  Contact the program  author  for  sup-
+      port.
+ 
+.cs 6 off
+.cm RELATED section
+.cs 7 on
+=========================================================================
+¢|VMARC Version 1.2¢%
+¢|Copyright (c) 1989-1993, John S. Fisher, Troy, New York
+=========================================================================
+ 
+For  RELATED information  on using  the VMARCSEA  (VMARC Self  Extracting
+Archive) routine,  place the cursor  under the  topic of your  choice and
+press ENTER or the PF1 key.
+ 
+ 
+CMS VMARCSEA (ALL       Explanation of Creating Self-Extracting
+                        Archives
+ 
+CMS VMARCSEA (FORMAT    Format for Creating a Self-Extracting Archive
+ 
+CMS VMARCSEA (BRIEF     The¢%VMARCSEA¢|Module
+ 
+.cs 7 off
+-------------------------------------------------------------------------
+    For information  about Creating¢|Self-Extracting  Archives¢%see
+    the RELATED help.
+-------------------------------------------------------------------------
+¢|Copyright (c) 1989-1993, John S. Fisher, Troy, New York

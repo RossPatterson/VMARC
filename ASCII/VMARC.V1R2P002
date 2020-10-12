@@ -1,0 +1,8 @@
+./ I 00387000          $ 387300 300                   04/04/90 09:07:30         
+         CLI   0(R4),C'?'          Request for explanation?    V1R2P002         
+         BE    VMPEXPL             --yep.                      V1R2P002         
+./ R 00707000          $ 707490 490                   04/04/90 09:07:30         
+         B     VMPEXPL             Tell 'em what it should be. V1R2P002 00707100
+./ D 01792000 01793000                                04/04/90 09:07:30         
+./ R 03152000          $ 3152490 490                  04/04/90 09:07:30         
+PGMPTF   EQU   2                   Program modification level. V1R2P002 03152100

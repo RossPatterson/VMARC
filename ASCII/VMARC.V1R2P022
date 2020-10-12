@@ -1,0 +1,11 @@
+./ R 00002379          $ 2469 90                      09/28/99 16:12:29         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.22' V1R2P022         
+./ I 01384000          $ 1384300 300                  09/28/99 16:12:29         
+         SLR   R15,R15        Zap it                           V1R2P022         
+         ST    R15,WRKIPITM   Clear item number                V1R2P022         
+./ I 02815000          $ 2815200 200                  09/28/99 16:12:29         
+         LA    R15,1          Get a one                        V1R2P022         
+         A     R15,WRKIPITM   Bump item number                 V1R2P022         
+         ST    R15,WRKIPITM   Bump item number                 V1R2P022         
+./ R 03153469          $ 3153509 40                   09/28/99 16:12:29         
+PGMPTF   EQU   22                  Program modification level. V1R2P022         

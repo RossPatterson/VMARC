@@ -1,0 +1,14 @@
+./ R 00002469          $ 2509 40                      09/28/99 16:11:31         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.23' V1R2P023         
+./ R 00741730          $ 741733 3                     09/28/99 16:11:31         
+         DC    X'15'                                           V1R2P023         
+         DC    C'   REPlace | NOReplac | ASKrepla | NEWRepla'  V1R2P023         
+./ R 00741750          $ 741755 5                     09/28/99 16:11:31         
+         DC    X'15',C'   IGNore  | NOIgnore  TRace | NOTrace' V1R2P023         
+./ R 00750000 00751000 $ 750390 390                   09/28/99 16:11:31         
+         DC    X'15'                                           V1R2P023         
+         DC    C'   REPlace | NOReplac | ASKrepla | NEWRepla'  V1R2P023         
+         DC  X'15',C'   OLDDate | NEWDate   APPend | NOAppend' V1R2P023         
+         DC    X'15',C'   BLock nnnn'                          V1R2P023         
+./ R 03153509          $ 3153529 20                   09/28/99 16:11:31         
+PGMPTF   EQU   23                  Program modification level. V1R2P023         

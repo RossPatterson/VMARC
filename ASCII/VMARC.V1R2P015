@@ -1,0 +1,12 @@
+./ R 00001980          $ 1990 10                      07/10/92 09:33:35         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.15' V1R2P015 00001990
+./ R 01412000 01413000 $ 1412590 590                  07/10/92 09:33:35         
+         CLC   =C'NOHOLD',WRKRCHLD  Reader unheld?             V1R2P015 01412590
+         BNE   INCEXIT0            --Nope, mustn't purge.      V1R2P015 01413180
+./ R 02861000          $ 2861490 490                  07/10/92 09:33:35         
+         B     VMAERROR                                        V1R2P015 02861000
+./ R 02891000          $ 2891290 290                  07/10/92 09:33:35         
+         OI    WRKFLAGA,X'FF'-WRKAOPNO  Don't rename output.   V1R2P015         
+         B     VMAERROR                                        V1R2P015 02891000
+./ R 03152990          $ 3152995 5                    07/10/92 09:33:35         
+PGMPTF   EQU   15                  Program modification level. V1R2P015 03152995

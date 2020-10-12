@@ -1,0 +1,14 @@
+./ R 00001780          $ 1870 90                      07/16/90 11:32:57 VMA00010
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.7'  V1R2P007 VMA00020
+./ R 01373000          $ 1373490 490                  07/16/90 11:32:57 VMA00030
+         L     R0,WRKIBUFL         Buffer length.              V1R2P007 VMA00040
+./ R 01497000          $ 1497490 490                  07/16/90 11:32:57 VMA00050
+         L     R0,WRKOBUFL         Buffer length.              V1R2P007 VMA00060
+./ R 03152880          $ 3152930 50                   07/16/90 11:32:57 VMA00070
+PGMPTF   EQU   7                   Program modification level. V1R2P007 VMA00080
+./ R 03288000 03289000 $ 3288590 590                  07/16/90 11:32:57 VMA00090
+WRKOBUFL DS    F                   GETMAIN size of output buffeV1R2P007 VMA00100
+WRKOBLEN DS    F                   Current size of output recorV1R2P007 VMA00110
+./ R 03291000 03292000 $ 3291590 590                  07/16/90 11:32:57 VMA00120
+WRKIBUFL DS    F                   GETMAIN size of input bufferV1R2P007 VMA00130
+WRKIBLEN DS    F                   Current size of input recordV1R2P007 VMA00140

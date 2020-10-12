@@ -1,0 +1,92 @@
+./ R 00002289          $ 2379 90                      09/23/98 17:03:51         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.21' V1R2P021         
+./ R 00195000          $ 195490 490                   09/23/98 17:03:51         
+*        PRINT NOGEN                                           V1R2P021         
+./ R 00881000 00883000 $ 881590 590                   09/23/98 17:03:51         
+         MVI   FIDADATI,X'19'      19                          V1R2P021         
+         PACK  FIDADATI+1(1),FSTYR   YY.                       V1R2P021         
+         MVC   FIDADATI+2(4),FSTD      MMDD, HHMM.             V1R2P021         
+         MVI   FIDADATI+6,X'00'                  SS.           V1R2P021         
+./ R 00887000          $ 887090 90                    09/23/98 17:03:51         
+         MVC   FIDADATI+1(6),FSTADATI   YYMMDD, HHMMSS.        V1R2P021         
+         MVI   FIDADATI,X'19'      Assume it's 19YYMMDD.       V1R2P021         
+         TM    FSTFB,FSTCNTRY      Is the file date 20xx?      V1R2P021         
+         BZ    *+8                 --no, skip.                 V1R2P021         
+         MVI   FIDADATI,X'20'      Yes, say so.                V1R2P021         
+./ R 01141000          $ 1141090 90                   09/23/98 17:03:51         
+         MVC   WRKADATI+1(6),HDRADATI   Get file time stamp.   V1R2P021         
+         MVI   WRKADATI,X'19'      Assume it's 19YYMMDD.       V1R2P021         
+         TM    HDRFLAGS,HDRFY2K    Is the file date 20xx?      V1R2P021         
+         BZ    *+8                 --no, skip.                 V1R2P021         
+         MVI   WRKADATI,X'20'      Yes, say so.                V1R2P021         
+./ R 01184660          $ 1184668 8                    09/23/98 17:03:51         
+         MVC   TMPADATI+1(6),FSTADATI   YYMMDD, HHMMSS.        V1R2P021         
+         MVI   TMPADATI,X'19'      Assume it's 19YYMMDD.       V1R2P021         
+         TM    FSTFB,FSTCNTRY      Is the file date 20xx?      V1R2P021         
+         BZ    *+8                 --no, skip.                 V1R2P021         
+         MVI   TMPADATI,X'20'      Yes, say so.                V1R2P021         
+         CLC   TMPADATI,WRKADATI   Compare time stamps.        V1R2P021         
+./ R 01307000          $ 1307490 490                  09/23/98 17:03:51         
+         MVC   HDRADATI,WRKADATI+1 ..time stamp.               V1R2P021         
+./ I 01308000          $ 1308200 200                  09/23/98 17:03:51         
+         CLI   WRKADATI,X'20'      Is the file date 20xx?      V1R2P021         
+         BNE   *+8                 --no, skip.                 V1R2P021         
+         OI    HDRFLAGS,HDRFY2K    Yes, say so.                V1R2P021         
+./ R 01516920          $ 1517310 390                  09/23/98 17:03:51         
+         ED    WRKPLDAT(5),WRKADATI+2  Format mm/dd.           V1R2P021         
+./ R 01518900          $ 1519290 390                  09/23/98 17:03:51         
+         ED    WRKPLDAT+6(2),WRKADATI+1 Format yy.             V1R2P021         
+./ R 01521870          $ 1522260 390                  09/23/98 17:03:51         
+         ED    WRKPLTIM,WRKADATI+4  Format hh:mm:ss            V1R2P021         
+./ R 01524840          $ 1524870 30                   09/23/98 17:03:51         
+* Build EPlist too, with 4-digit year.  DMSPLU will use it     V1R2P021         
+* instead of the Plist in CMS11 and later, and will ignore it  V1R2P021         
+* in earlier releases.                                         V1R2P021         
+         LA    R1,WRKPLCMD          Set eplist                 V1R2P021         
+         ST    R1,WRKPECMD             cmd name.               V1R2P021         
+         LA    R1,WRKPEARG          Set eplist                 V1R2P021         
+         ST    R1,WRKPEAST             arg start.              V1R2P021         
+         LA    R1,WRKPEARL(,R1)     Set eplist                 V1R2P021         
+         ST    R1,WRKPEAEN             arg end.                V1R2P021         
+         MVI   WRKPEARG,C' '        Blank out                  V1R2P021         
+         MVC   WRKPEARG+1(WRKPEARL-1),WRKPEARG  eplist.        V1R2P021         
+         MVC   WRKPEFN,=CL8'VMARC'   Source fileid.            V1R2P021         
+         MVC   WRKPEFT,=CL8'CMSUT1'  ..                        V1R2P021         
+         MVC   WRKPEFM(2),WRKFINFM   ..                        V1R2P021         
+         MVC   WRKPEDAT,=X'20216120206120202020'               V1R2P021         
+         ED    WRKPEDAT(5),WRKADATI+2  Format mm/dd.           V1R2P021         
+         OC    WRKPEDAT(2),=C'00'    Force leading digit.      V1R2P021         
+         ED    WRKPEDAT+6(4),WRKADATI  Format yyyy.            V1R2P021         
+         OC    WRKPEDAT+8(2),=C'00'  Force leading digits.     V1R2P021         
+         MVC   WRKPETIM,=X'20217A20207A2020'                   V1R2P021         
+         ED    WRKPETIM,WRKADATI+4  Format hh:mm:ss            V1R2P021         
+         OC    WRKPETIM(2),=C'00'  Force leading digits.       V1R2P021         
+         CMSCALL PLIST=WRKPLLST,EPLIST=WRKPELST                V1R2P021         
+./ R 03070000          $ 3070490 490                  09/23/98 17:03:51         
+FIDADATI DS    CL7                 Time stamp, YYYYMMDD HHMMSS.V1R2P021         
+./ R 03147300          $ 3147390 90                   09/23/98 17:03:51         
+HDRFY2K  EQU   B'00100000'           HDRADATI is 20xx, not 19xxV1R2P021         
+*        EQU   B'00011110'           (Reserved)                V1R2P021         
+./ R 03153379          $ 3153469 90                   09/23/98 17:03:51         
+PGMPTF   EQU   21                  Program modification level. V1R2P021         
+./ R 03205000          $ 3205290 290                  09/23/98 17:03:51         
+WRKADATI DS    XL7             File time stamp, YYYYMMDD,HHMMSSV1R2P021         
+TMPADATI DS    XL7                 Converted FSTADATI.         V1R2P021         
+./ I 03402840          $ 3402848 8                    09/23/98 17:03:51         
+***************************************************************V1R2P021         
+WRKPELST DS    0D            DMSPLU Eplist.                    V1R2P021         
+***************************************************************V1R2P021         
+WRKPECMD DS    A                A(CL8'DMSPLU')                 V1R2P021         
+WRKPEAST DS    A                A(argstring start)             V1R2P021         
+WRKPEAEN DS    A                A(argstring end)               V1R2P021         
+WRKPEARG EQU   *                Argstring:                     V1R2P021         
+WRKPEFN  DS    CL8                Filename.                    V1R2P021         
+         DS    C                                               V1R2P021         
+WRKPEFT  DS    CL8                Filetype.                    V1R2P021         
+         DS    C                                               V1R2P021         
+WRKPEFM  DS    CL8                Filemode.                    V1R2P021         
+         DS    C                                               V1R2P021         
+WRKPEDAT DS    CL10'mm/dd/yyyy'   File creation date.          V1R2P021         
+         DS    C                                               V1R2P021         
+WRKPETIM DS    CL8'hh:mm:ss'      File creation time.          V1R2P021         
+WRKPEARL EQU   *-WRKPEARG       Argstring length.              V1R2P021         

@@ -1,0 +1,33 @@
+./ R 00001995          $ 1997 2                       07/14/92 11:38:36         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.17' V1R2P017 00001995
+./ R 00536000          $ 536490 490                   07/14/92 11:38:36         
+         CL    R1,=A(HDRXDLEN)     Test range.                 V1R2P017 00536000
+./ I 01122000          $ 1122200 200                  07/14/92 11:38:36         
+         TM    HDRFLAGS,HDRFEXTH   Extended header?            V1R2P017         
+         BZ    *+L'*+4                                         V1R2P017         
+         LA    R0,HDRXDLEN         Length of the header.       V1R2P017 01122000
+./ I 01139000          $ 1139200 200                  07/14/92 11:38:36         
+         TM    HDRFLAGS,HDRFEXTH   Extended header?            V1R2P017         
+         BZ    *+L'*+4             --no, old LRECL is fine.    V1R2P017         
+         ICM   R0,15,HDRXRECL      --yes, use extended LRECL.  V1R2P017 01122000
+./ I 01300000          $ 1300500 500                  07/14/92 11:38:36         
+         XC    HEADER(HDRXDLEN),HEADER  Initialize all fields. V1R2P017         
+./ I 01317000          $ 1317030 30                   07/14/92 11:38:36         
+         CLC   =XL2'00',WRKIPBLN   Extended header needed?     V1R2P017         
+         BE    OPNEXIT0            --no.                       V1R2P017         
+         MVC   HDRXRECL,WRKIPBLN   Full-size LRECL.            V1R2P017         
+         OI    HDRFLAGS,HDRFEXTH   Mark header as extended.    V1R2P017         
+         MVI   HDRVERSN+1,2        Version 1.2 required.       V1R2P017 01303000
+         LA    R0,HDRXDLEN                                     V1R2P017 01316000
+         ST    R0,WRKNDXOU         Set output index.           V1R2P017 01317000
+./ I 03135000          $ 3135500 500                  07/14/92 11:38:36         
+*        1,2   Extended header.                                V1R2P017 03135000
+./ I 03147000          $ 3147300 300                  07/14/92 11:38:36         
+*        EQU   B'00111110'           (Reserved)                V1R2P017 03147000
+HDRFEXTH EQU   B'00000001'           Extended header.          V1R2P017 03147000
+./ I 03148000          $ 3148200 200                  07/14/92 11:38:36         
+HDRXRECL DS    FL4                 Original record length.     V1R2P017         
+         DS    XL8                 (Reserved.)                 V1R2P017         
+HDRXDLEN EQU   (*-HEADER)    Length of extended CFF header.    V1R2P017         
+./ R 03152997          $ 3152998 1                    07/14/92 11:38:36         
+PGMPTF   EQU   17                  Program modification level. V1R2P017 03152997

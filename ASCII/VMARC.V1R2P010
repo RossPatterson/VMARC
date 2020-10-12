@@ -1,0 +1,170 @@
+./ I 00172000          $ 172100 100                   11/08/90 12:42:00         
+*  To Generate Module:                                         V1R2P010 00172100
+*             VMFASM VMARC VMARC                               V1R2P010 00172200
+*             LOAD   VMARC       ( RLD                         V1R2P010 00172300
+*             GENMOD VMARC       ( SYSTEM ALL NOSTR            V1R2P010 00172400
+*                                                              V1R2P010 00172500
+./ I 00176000          $ 176100 100                   11/08/90 12:42:00         
+ DC C'Nucleus Extension Update (V1R2P010) by Ken Chamberlain  '        X00175500
+                                                               V1R2P010 00175500
+*                                                              V1R2P010         
+./ I 00205000          $ 205010 10                    11/08/90 12:42:00         
+         USING SCBLOCK,R2                                      V1R2P010 00205010
+         ICM   R2,15,NUCXCBLK      Get SCBLOCK anchor.         V1R2P010 00205020
+         BZ    NUCME               Nobody home, go add me.     V1R2P010 00205030
+AMINUC   DS    0H                                              V1R2P010 00205040
+         CLC   SCBNAME(8),0(R1)    Is this me?                 V1R2P010 00205050
+         BNE   AMINEXT             --no, but must check rest.  V1R2P010 00205060
+         DMSKEY NUCLEUS                                        V1R2P010 00205070
+*  In case I was manually loaded w/o the system service flags  V1R2P010 00205080
+*  I flip them on here.                                        V1R2P010 00205090
+         OI    SCBSFLAG,SCBSFSYS+SCBSFSER Set system+service.  V1R2P010 00205100
+         DMSKEY RESET                                          V1R2P010 00205110
+         B     IMLOADED            Go begin normal processing. V1R2P010 00205120
+AMINEXT  DS    0H                                              V1R2P010 00205130
+         ICM   R2,15,SCBFWPTR      Follow forward pointer.     V1R2P010 00205140
+         BNZ   AMINUC              Go back and try again.      V1R2P010 00205150
+         DROP  R2                                              V1R2P010 00205160
+***************************************************************V1R2P010         
+*  NUCXLOAD ourselves.                                        *V1R2P010         
+***************************************************************V1R2P010         
+NUCME    DS    0H                                              V1R2P010 00205170
+         ST    R13,R13SAVE         Save 1st time for NUCXLOAD. V1R2P010 00205180
+         MVC   NUC1(8),0(R1)       Save my Module name in case V1R2P010 00205190
+         MVC   NUC2(8),0(R1)       ..they didn't call me VMARC V1R2P010 00205200
+         MVC   NUC3(8),0(R1)       ..for some stupid reason.   V1R2P010 00205210
+         L     R1,=A(NUCXLOAD)     Get NUCXLOAD parms.         V1R2P010 00205220
+         SVC   202                 ..                          V1R2P010 00205230
+         DC    AL4(1)                                          V1R2P010 00205240
+         LTR   R15,R15             Test NUCXLOAD status.       V1R2P010 00205250
+         BZ    GETPSW              Skip ahead if all is well.  V1R2P010 00205260
+         WRTERM 'VMARC: Nucxload Failed'  Give a nice message. V1R2P010 00205270
+         LA    R15,40              Set abnormal return code.   V1R2P010 00205280
+         L     R13,R13SAVE         Get ticket home.            V1R2P010 00205290
+         RETURN (14,12),T,RC=(15)  Leave without further actionV1R2P010 00205300
+*                                                              V1R2P010         
+*  Find exactly where we have been loaded.                     V1R2P010         
+GETPSW   DS    0H                                              V1R2P010 00205310
+         SLR   R0,R0               Clear out                   V1R2P010 00205320
+         ST    R0,EXTADD           Clear address               V1R2P010 00205330
+         L     R1,=A(NUCEXT)                                   V1R2P010 00205340
+         SVC   202                 Ask CMS where I am loaded.  V1R2P010 00205350
+         DC    AL4(1)              ..                          V1R2P010 00205360
+         LTR   R15,R15             (Can this every fail?)      V1R2P010 00205370
+         BNZ   NUCME               (..)                        V1R2P010 00205380
+         L     R2,EXTADD           Get address in NUCX area.   V1R2P010 00205390
+         USING SCBLOCK,R2                                      V1R2P010 00205400
+         L     R13,R13SAVE         Restore save area address.  V1R2P010 00205410
+         LM    R0,R1,20(R13)       Recover registers R0, R1... V1R2P010 00205420
+         LM    R3,RLINK,32(R13)    ..R3 - R12..                V1R2P010 00205430
+         L     R14,12(,R13)        ..and R14 from save area.   V1R2P010 00205440
+         L     R15,SCBENTR         Get entry point in R15.     V1R2P010 00205450
+         LR    RBASE,R15           Set up other base.          V1R2P010 00205460
+         LPSW  SCBPSW              Perform fancy branch.       V1R2P010 00205470
+         DROP  R2                                              V1R2P010 00205480
+IMLOADED DS    0H                                              V1R2P010 00205490
+*  Check to see if X'FF' service call.  If so, then exit       V1R2P010 00205500
+*  gracefully due to a NUCXDROP, or because CMS is coming      V1R2P010 00205510
+*  down around our ears.                                       V1R2P010 00205520
+         CLM   R1,B'1000',=AL1(EPLFABEN) Service call?         V1R2P010 00205530
+         BE    FFCALL                    --yes, bail out.      V1R2P010 00205540
+./ D 00210000 00211000                                11/08/90 12:42:00         
+./ D 00214000                                         11/08/90 12:42:00         
+./ R 00218000          $ 218190 190                   11/08/90 12:42:00         
+         L     R1,=A(WRKDLEN)      Octets needed for workarea. V1R2P010 00218190
+         LR    R0,R1               Make min the same,          V1R2P010 00218380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,AREA=HIGH,            X00218570
+               TYPCALL=BALR        Grab some needed storage    V1R2P010 00218760
+./ R 00333000          $ 333190 190                   11/08/90 12:42:00         
+         L     R0,=A(FIDDLEN8)     Length in Double words      V1R2P010 00333190
+         LR    R1,R2               Move addr to R1             V1R2P010 00333380
+         DMSFRET DWORDS=(0),LOC=(1),TYPCALL=BALR               V1R2P010 00333570
+./ R 00341000 00342000 $ 341590 590                   11/08/90 12:42:00         
+         L     R0,=A(WRKDLEN)      Length in Double words      V1R2P010 00341590
+         DMSFRET DWORDS=(0),LOC=(1),TYPCALL=BALR Liberate It.  V1R2P010 00342180
+./ D 00345000                                         11/08/90 12:42:00         
+./ I 00348000          $ 348500 500                   11/08/90 12:42:00         
+FFCALL   DS    0H                  Service calls come here.    V1R2P010 00348500
+./ R 00866000          $ 866190 190                   11/08/90 12:42:00         
+         L     R1,=A(FIDDLEN8)     Length in Double words      V1R2P010 00866190
+         LR    R0,R1               Make min the same please    V1R2P010 00866380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X00866570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 00866760
+./ R 00962000          $ 962190 190                   11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 00962190
+         LR    R1,R0               Make min the same please    V1R2P010 00962380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X00962570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 00962760
+./ R 00974000          $ 974190 190                   11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 00974190
+         LR    R1,R0               Make min the same please    V1R2P010 00974380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X00974570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 00974760
+./ R 01044000          $ 1044190 190                  11/08/90 12:42:00         
+         L     R0,=A(FIDDLEN8)     Length in Double words      V1R2P010 01044190
+         LR    R1,R2               Move addr to R1             V1R2P010 01044380
+         DMSFRET DWORDS=(0),LOC=(1),TYPCALL=BALR Liberate It!  V1R2P010 01044570
+./ R 01065000          $ 1065190 190                  11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 01065190
+         LR    R1,R0               Make min the same please    V1R2P010 01065380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X01065570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 01065760
+./ R 01228000          $ 1228190 190                  11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 01228190
+         LR    R1,R0               Make min the same please    V1R2P010 01228380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X01228570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 01228760
+./ R 01252000          $ 1252190 190                  11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 01252190
+         LR    R1,R0               Make min the same please    V1R2P010 01252380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X01252570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 01252760
+./ R 01268000          $ 1268190 190                  11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 01268190
+         LR    R1,R0               Make min the same please    V1R2P010 01268380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X01268570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 01268760
+./ R 01284000          $ 1284190 190                  11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 01284190
+         LR    R1,R0               Make min the same please    V1R2P010 01284380
+         DMSFREE DWORDS=(0),MIN=(1),TYPE=NUCLEUS,                      X01284570
+               AREA=HIGH,TYPCALL=BALR Grab some needed storage V1R2P010 01284760
+./ R 01374000          $ 1374290 290                  11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 01374100
+         DMSFRET DWORDS=(0),LOC=(1),TYPCALL=BALR Liberate It! BV1R2P010 01374200
+./ R 01498000          $ 1498290 290                  11/08/90 12:42:00         
+         SRL   R0,3                Divide by 8                 V1R2P010 01498100
+         DMSFRET DWORDS=(0),LOC=(1),TYPCALL=BALR Liberate It!  V1R2P010 01498200
+./ D 01510000                                         11/08/90 12:42:00         
+./ D 01532000                                         11/08/90 12:42:00         
+./ R 01547000          $ 1547190 190                  11/08/90 12:42:00         
+         L     R0,=A(FIDDLEN8)     Length in Double words      V1R2P010 01547190
+         LR    R1,R3               Make min the same please    V1R2P010 01547380
+         DMSFRET DWORDS=(0),LOC=(1),TYPCALL=BALR Liberate It!  V1R2P010 01547570
+./ D 01644000                                         11/08/90 12:42:00         
+./ I 03004000          $ 3004060 60                   11/08/90 12:42:00         
+         TITLE 'Nucleus Extension Load Constants'              V1R2P010 03004060
+NUCEXT   DS    0D                                              V1R2P010 03004120
+         DC    CL8'NUCEXT'   After Nucxload find out where     V1R2P010 03004180
+NUC1     DC    CL8'VMARC'     the heck I was loaded at so      V1R2P010 03004240
+EXTADD   DC    A(0)           I can load my new PSW.           V1R2P010 03004300
+         DC    8X'FF'        Typical fence for Svc 202         V1R2P010 03004360
+NUCXLOAD DC    CL8'NUCXLOAD' Nucxload myself somewhere upstairsV1R2P010 03004420
+NUC2     DC    CL8'VMARC'     as myself (Who else?)            V1R2P010 03004480
+NUC3     DC    CL8'VMARC'     from my module.                  V1R2P010 03004540
+         DC    CL8'('                                          V1R2P010 03004600
+         DC    CL8'SYSTEM'   I can take care of myself (maybe) V1R2P010 03004660
+         DC    CL8'SERVICE'  Tell me if Nucxdrop or Cms dies.  V1R2P010 03004720
+         DC    8X'FF'        Typical Fence for Svc 202         V1R2P010 03004780
+R13SAVE  DS    F             Ticket Home After Nucxload        V1R2P010 03004840
+./ I 03076000          $ 3076500 500                  11/08/90 12:42:00         
+FIDDLEN8 EQU   (FIDDLEN+7)/8       Calc length in Double words V1R2P010 03076500
+./ I 03457000          $ 3457100 100                  11/08/90 12:42:00         
+***************************************************************V1R2P010 03457100
+*                       Subcommand Control Block               V1R2P010 03457200
+***************************************************************V1R2P010 03457300
+         SCBLOCK                                               V1R2P010 03457400
+***************************************************************V1R2P010 03457500
+*                       Extended Plist Dsect                   V1R2P010 03457600
+***************************************************************V1R2P010 03457700
+         EPLIST                                                V1R2P010 03457800

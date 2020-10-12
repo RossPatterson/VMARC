@@ -1,0 +1,19 @@
+./ R 00002539          $ 2549 10                      08/21/00 10:45:43         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.26' V1R2P026         
+./ R 00884000          $ 884290 290                   08/21/00 10:45:43         
+         LH    R0,FSTIC            Get record count.           V1R2P026         
+         B     INCKEMPT                                        V1R2P026         
+./ I 00887450          $ 887490 40                    08/21/00 10:45:43         
+         L     R0,FSTAIC           Get record count.           V1R2P026         
+* Check if this is a zero-record file.  We don't accept those. V1R2P026         
+INCKEMPT DS    0H                                              V1R2P026         
+         LTR   R0,R0               Any records?                V1R2P026         
+         BNZ   INSETOUT            Yes, accept the file.       V1R2P026         
+         LR    R4,R1               Preserve R1 around LINEDIT. V1R2P026         
+         LINEDIT TEXT='Input file ........ ........ .. has 0 records anX        
+               d will be skipped.',RENT=NO,                            X        
+               SUB=(CHARA,FSTN,CHARA,FSTT,CHARA,FSTM)          V1R2P026         
+         FREEMAIN R,A=(R4),LV=FIDDLEN  Toss out the FIDDSECT.  V1R2P026         
+         B     INGETNXT            Try to find another.        V1R2P026         
+./ R 03153549          $ 3153559 10                   08/21/00 10:45:43         
+PGMPTF   EQU   26                  Program modification level. V1R2P026         

@@ -1,0 +1,47 @@
+./ R 00001970          $ 1980 10                      04/10/92 11:13:00         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.14' V1R2P014 00001980
+./ R 00078000          $ 78490 490                    04/10/92 11:13:00         
+&OPT3    SETC  'HOLDASKRNEWR'                                  V1R2P014 00078490
+./ R 00785000          $ 785490 490                   04/10/92 11:13:00         
+REPLACE  OPTN  2,(REPL),(APP,ASKR,NEWR),(REPL) Overwrite ok.   V1R2P014 00785000
+./ I 00787000          $ 787200 200                   04/10/92 11:13:00         
+NEWREPLA OPTN  4,(REPL,NEWR),(ASKR,APP),(REPL) Replace if newerV1R2P014        0
+ASKREPLA OPTN  3,(REPL,ASKR),(NEWR,APP),(REPL) Ask to replace. V1R2P014        0
+PROMPT   OPTN  3,(REPL,ASKR),(NEWR,APP),(REPL) Ask to replace. V1R2P014        0
+./ R 01184000 01185000 $ 1184060 60                   04/10/92 11:13:00         
+         BZ    OUTERREP            --Don't overwrite.          V1R2P014 01184060
+         TM    WRKOPTN3,WRK3ASKR   Ask for permission?         V1R2P014 01184120
+         BO    OUTASKR             --yes, go ask now.          V1R2P014 01184180
+         TM    WRKOPTN3,WRK3NEWR   Require newer version?      V1R2P014 01184240
+         BNO   OUTSETID            --no, unconditional replace.V1R2P014 01184300
+*                                                              V1R2P014 01184360
+*  Allow replace if member is a newer version.                 V1R2P014 01184420
+OUTNEWR  DS    0H                                              V1R2P014 01184480
+         L     R1,WRKESSTR         Get FSTSECT address.        V1R2P014 01184540
+         USING FSTSECT,R1                                      V1R2P014 01184600
+         CLC   FSTADATI,WRKADATI   Compare time stamps.        V1R2P014 01184660
+         BL    OUTSETID            --Replace with newer file.  V1R2P014 01184720
+         B     OUTERREP            --Don't replace if older.   V1R2P014 01184780
+         DROP  R1                                              V1R2P014 01184840
+*                                                              V1R2P014 01184900
+*  Ask for permission to replace this file.                    V1R2P014 01184960
+OUTASKR  DS    0H                                              V1R2P014 01185020
+         LA    R2,WRKFINID                                     V1R2P014 01185080
+         LINEDIT TEXT='Replace ....................?',                 X01185140
+               SUB=(CHAR8A,(R2)),DOT=NO                        V1R2P014 01185200
+         LA    R2,WRKCPANS         Response buffer.            V1R2P014 01185260
+         RDTERM (R2)               Get user's approval.        V1R2P014 01185320
+         CLI   WRKCPANS,C'Y'                                   V1R2P014 01185380
+         BNE   OUTERREP            --It's not ok.              V1R2P014 01185440
+         B     OUTSETID            --It is ok.                 V1R2P014 01185500
+./ R 01344000          $ 1344090 90                   04/10/92 11:13:00         
+         LA    R2,WRKFINID                                     V1R2P014 01344090
+         LINEDIT TEXT='Output file ................... already exists',X01344180
+               SUB=(CHAR8A,(R2))                               V1R2P014 01344270
+         TM    WRKOPTN1,WRK1PACK   Packing?                    V1R2P014 01344360
+         BZ    OUTSKIP             --no, just skip member.     V1R2P014 01344450
+./ R 03152980          $ 3152990 10                   04/10/92 11:13:00         
+PGMPTF   EQU   14                  Program modification level. V1R2P014 03152990
+./ I 03274000          $ 3274300 300                  04/10/92 11:13:00         
+WRK3ASKR EQU   B'01000000'         Ask permission to replace.  V1R2P014 03274300
+WRK3NEWR EQU   B'00100000'         REPLACE if newer date.      V1R2P014 03274600

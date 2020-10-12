@@ -1,0 +1,3 @@
+./ R 00133160 00133240 $ 133200 40                    07/10/92 13:05:39         
+&VMCSECT SETC  'VMARCSEA'    Select self-extracting code.      V1R2PSEA 00133160
+*VMCSECT SETC  'VMARC'       Select normal code.               V1R2PSEA 00133240

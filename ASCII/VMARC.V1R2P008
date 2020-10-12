@@ -1,0 +1,24 @@
+./ R 00001870          $ 1920 50                      07/19/90 13:32:23         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.8'  V1R2P008 00001870
+./ I 00987000          $ 987070 70                    07/19/90 13:32:23         
+*  The following is an incredibly klugy way to distinguish     V1R2P008         
+*  between VM/XA and VM/SP.  In the response to the command    V1R2P008         
+*  Q V 00C, under XA there is a four-digit virtual address,    V1R2P008         
+*  while under SP, three digits.  XA-versus-SP is significant  V1R2P008         
+*  here, when we parse the Q V 00C command response, and a     V1R2P008         
+*  little later when we close the reader to get the spool id.  V1R2P008         
+*  (For an XA system, we need to add NOKEEP to the close.)     V1R2P008         
+         CLI   WRKCPANS+8,X'40'    XA response is RDR  000C... V1R2P008 00987100
+*                                  SP response is RDR  00C...  V1R2P008 00987200
+         BNE   *+L'*+10            --VM/XA system.             V1R2P008 00987300
+         MVC   WRKRCRES,WRKCPANS+3 Set up SP cmd to restore rdrV1R2P008 00987400
+         B     *+L'*+6                                         V1R2P008 00987500
+./ I 01004000          $ 1004200 200                  07/19/90 13:32:23         
+         CLI   WRKRCRES+1,X'40'    VM/XA system?               V1R2P008         
+         BE    *+L'*+4             --no.                       V1R2P008         
+         LA    R2,OPRCLOXA         --yes, add NOKEEP to CLOSE. V1R2P008         
+./ R 03152930          $ 3152950 20                   07/19/90 13:32:23         
+PGMPTF   EQU   8                   Program modification level. V1R2P008 03152930
+./ R 03415000 03416000 $ 3415590 590                  07/19/90 13:32:23         
+WRKRCRES DS    0CL32                                           V1R2P008 03415590
+         DS    C' 000C CL '                                    V1R2P008 03416180

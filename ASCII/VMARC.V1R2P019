@@ -1,0 +1,19 @@
+./ R 00001998          $ 1999 1                       09/19/94 12:34:53         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.19' V1R2P019         
+./ R 00173770          $ 173860 90                    09/19/94 12:34:53         
+ DC C'Copyright (c) 1989-1994, John S. Fisher, Troy, NY.      '        X        
+./ R 00189070          $ 189160 90                    09/19/94 12:34:53         
+*                           Assoc. Director, ITS               V1R2P019         
+./ I 01094000          $ 1094100 100                  10/10/94 09:23:41         
+         ICALL OUTCLOSE            Do any final out processing.V1R2P019         
+         LTR   R15,R15                                         V1R2P019         
+         BNZ   OPNEXIT8                                        V1R2P019         
+./ R 01489000          $ 1489490 490                  10/10/94 09:23:41         
+         IENTER SA=B                                           V1R2P019         
+./ R 01585000          $ 1585490 490                  10/10/94 09:23:41         
+         MVC   WRKERID,WRKFINID    Input fileid.               V1R2P019         
+./ R 02891290          $ 2891380 90                   09/19/94 12:34:53         
+         NI    WRKFLAGA,X'FF'-WRKAOPNO  Don't rename output.   V1R2P019         
+./ R 03152999 03153000 $ 3153289 290                  09/19/94 12:34:53         
+PGMPTF   EQU   19                  Program modification level. V1R2P019         
+*                                                              V1R2P019         

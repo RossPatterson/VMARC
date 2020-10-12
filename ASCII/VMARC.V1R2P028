@@ -1,0 +1,235 @@
+./ *                                                                            
+./ R 00002559          $ 2569 10                      05/14/02 00:12:49         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.28' V1R2P028         
+./ I 00229000          $ 229100 100                   05/14/02 00:12:49         
+***********************************************************************         
+*              Issue DIAG 0 to get Program Product Bit Map     V1R2P028         
+***********************************************************************         
+         LA    R2,WRKDIAG0         A(DIAG 0 output area)       V1R2P028         
+         LA    R3,L'WRKDIAG0       Length of area              V1R2P028         
+         DC    0H'0',AL.4(8,3,R2,R3),X'0000'  Issue DIAG 0     V1R2P028         
+./ R 00846900          $ 847090 190                   05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).ENA001A                          V1R2P025         
+./ R 00847640 00847690 $ 847650 10                    05/14/02 00:12:49         
+         TM    WRKD0PPM,X'80'      Is this a VM/SP machine?    V1R2P028         
+         BO    ENA001A             Yes, use SSM.               V1R2P028         
+         CLC   WRKD0PPM,=XL8'00'   Is this a VM/370 machine?   V1R2P028         
+         BE    ENA001A             Yes, use SSM.               V1R2P028         
+         TM    X'5EA',X'80'        Is this an XA-mode machine? V1R2P025         
+         BO    ENA001B             Yes, use STNSM.             V1R2P025         
+ENA001A  DS    0H                                              V1R2P028         
+./ R 00848700          $ 848990 290                   05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).ENA002A                          V1R2P025         
+./ I 00849590          $ 849600 10                    05/14/02 00:12:49         
+         TM    WRKD0PPM,X'80'      Is this a VM/SP machine?    V1R2P028         
+         BO    ENA002A             Yes, use SSM.               V1R2P028         
+         CLC   WRKD0PPM,=XL8'00'   Is this a VM/370 machine?   V1R2P028         
+         BE    ENA002A             Yes, use SSM.               V1R2P028         
+./ I 00849690          $ 849710 20                    05/14/02 00:12:49         
+ENA002A  DS    0H                                              V1R2P028         
+./ I 00877000          $ 877500 500                   05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).NOEDF01                          V1R2P028         
+./ I 00879000          $ 879500 500                   05/14/02 00:12:49         
+.NOEDF01 ANOP  ,                                               V1R2P028         
+./ R 00881590 00883360 $ 881780 190                   05/14/02 00:12:49         
+         PACK  FIDADATI(2),FSTYR      0YYF.                    V1R2P028         
+         SRP   FIDADATI(2),1,0        YY0F.                    V1R2P028         
+         MVC   FIDADATI+1(1),FIDADATI   YY                     V1R2P028         
+         MVI   FIDADATI,X'19'         19                       V1R2P028         
+         CLI   FIDADATI+1,X'70'         YY < 70? (1970 WINDOW) V1R2P028         
+         BNL   INSETCDF                 No,  use 1900 for year V1R2P028         
+         MVI   FIDADATI,X'20'           Yes, use 2000 for year V1R2P028         
+INSETCDF DS    0H                                              V1R2P028         
+         MVC   FIDADATI+2(4),FSTD          MMDD, HHMM.         V1R2P028         
+         MVI   FIDADATI+6,X'00'                      SS.       V1R2P028         
+./ I 00884290          $ 884390 100                   05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).NOEDF02                          V1R2P028         
+./ I 00887490          $ 887510 20                    05/14/02 00:12:49         
+.NOEDF02 ANOP  ,                                               V1R2P028         
+./ R 00923700          $ 923990 290                   05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).ENA003A                          V1R2P025         
+./ I 00924590          $ 924600 10                    05/14/02 00:12:49         
+         TM    WRKD0PPM,X'80'      Is this a VM/SP machine?    V1R2P028         
+         BO    ENA003A             Yes, use SSM.               V1R2P028         
+         CLC   WRKD0PPM,=XL8'00'   Is this a VM/370 machine?   V1R2P028         
+         BE    ENA003A             Yes, use SSM.               V1R2P028         
+./ I 00924690          $ 924710 20                    05/14/02 00:12:49         
+ENA003A  DS    0H                                              V1R2P028         
+./ R 00925700          $ 925990 290                   05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).ENA004A                          V1R2P025         
+./ I 00926590          $ 926600 10                    05/14/02 00:12:49         
+         TM    WRKD0PPM,X'80'      Is this a VM/SP machine?    V1R2P028         
+         BO    ENA004A             Yes, use SSM.               V1R2P028         
+         CLC   WRKD0PPM,=XL8'00'   Is this a VM/370 machine?   V1R2P028         
+         BE    ENA004A             Yes, use SSM.               V1R2P028         
+./ I 00926690          $ 926710 20                    05/14/02 00:12:49         
+ENA004A  DS    0H                                              V1R2P028         
+./ R 01002000          $ 1002090 90                   05/14/02 00:12:49         
+         DC    AL4(*+4)            Test error afterwards.      V1R2P028         
+         LTR   R15,R15             Any error?                  V1R2P028         
+         BZ    INCRDONE            No, read is done.           V1R2P028         
+         CH    R15,=H'5'           We expect a length error.   V1R2P028         
+         BNE   INCEREAD            Not anything else.          V1R2P028         
+INCRDONE DS    0H                                              V1R2P028         
+./ R 01006000 01007000 $ 1006090 90                   05/14/02 00:12:49         
+         MVC   WRKCPCMD(OPRQRYLN),OPRQRY  Move in query cmd.   V1R2P028         
+         LA    R2,OPRQRYLN+1       ..its length.               V1R2P028         
+         MVC   WRKCPCMD+OPRQRYLN(1),WRKRCCLS  Spool class.     V1R2P028         
+         TM    WRKD0PPM,X'80'      Is this a VM/SP machine?    V1R2P028         
+         BO    INCARDS0            Yes, use alternate query.   V1R2P028         
+         CLC   WRKD0PPM,=XL8'00'   Is this a VM/370 machine?   V1R2P028         
+         BNE   INCARDS1            No, use current query.      V1R2P028         
+INCARDS0 DS    0H                  Yes, use older query format.V1R2P028         
+         MVC   WRKCPCMD(OPRQRYLN),OPRQRY0 Move in query cmd.   V1R2P028         
+         LA    R2,OPRQRYL0+1       ..its length.               V1R2P028         
+         MVC   WRKCPCMD+OPRQRYL0(1),WRKRCCLS  Spool class.     V1R2P028         
+INCARDS1 DS    0H                                              V1R2P028         
+./ D 01009000                                         05/14/02 00:12:49         
+./ I 01018490          $ 1018590 100                  05/14/02 00:12:49         
+INCEREAD DS    0H                                              V1R2P028         
+         LINEDIT SUB=(DEC,(R15)),                              V1R2P028X        
+               TEXT='Unexpected error reading reader.  RC=..'  V1R2P028         
+         B     OPNEXIT8                                        V1R2P028         
+./ I 01032000          $ 1032200 200                  05/14/02 00:12:49         
+OPRQRY0  DC    C'Q RDR ALL NOHOLD'                                              
+         DC    C' CLASS '                                                       
+OPRQRYL0 EQU   *-OPRQRY0                                                        
+./ I 01057000          $ 1057500 500                  05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).NIT001A                          V1R2P028         
+./ I 01058000          $ 1058020 20                   05/14/02 00:12:49         
+         AGO   .NIT001B                                        V1R2P028         
+.NIT001A ANOP  ,                                               V1R2P028         
+         MVC   WR0IPNIT,=H'1'      Number of items=1.          V1R2P028         
+.NIT001B ANOP  ,                                               V1R2P028         
+./ R 01169000          $ 1169090 90                   05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).STW001A                          V1R2P028         
+         MVC   WRKESCMD,=CL8'ESTATEW'                                           
+         AGO   .STW001B                                        V1R2P028         
+.STW001A ANOP  ,                                               V1R2P028         
+         MVC   WRKESCMD,=CL8'STATEW'                           V1R2P028         
+.STW001B ANOP  ,                                               V1R2P028         
+./ R 01173000          $ 1173490 490                  05/14/02 00:12:49         
+         SVC   202                 (E)STATEW.                  V1R2P028         
+./ I 01184600          $ 1184604 4                    05/14/02 00:12:49         
+         AIF   (&CMSLVL GE 1).NOCDF01                          V1R2P028         
+*  Extract non-EDF date information.                           V1R2P028         
+         PACK  TMPADATI(2),FSTYR      0YYF  <==  FYFY.         V1R2P028         
+         SRP   TMPADATI(2),1,0        YY0F.                    V1R2P028         
+         MVC   TMPADATI+1(1),TMPADATI   YY                     V1R2P028         
+         MVI   TMPADATI,X'19'         19                       V1R2P028         
+         CLI   TMPADATI+1,X'70'         YY < 70? (1970 WINDOW) V1R2P028         
+         BNL   OUTNEWR0                 No,  use 1900 for year.V1R2P028         
+         MVI   TMPADATI,X'20'           Yes, use 2000 for year.V1R2P028         
+OUTNEWR0 DS    0H                                              V1R2P028         
+         MVC   TMPADATI+2(4),FSTD          MMDD, HHMM.         V1R2P028         
+         MVI   TMPADATI+6,X'00'                      SS.       V1R2P028         
+         AGO   .NOCDF02            Go compare dates.           V1R2P028         
+.NOCDF01 ANOP  ,                                               V1R2P028         
+*  Extract EDF date information.                               V1R2P028         
+./ I 01184700          $ 1184704 4                    05/14/02 00:12:49         
+.NOCDF02 ANOP  ,                                               V1R2P028         
+./ I 01222000          $ 1222500 500                  05/14/02 00:12:49         
+         AIF   (&CMSLVL LT 1).NIT002A                          V1R2P028         
+./ I 01223000          $ 1223200 200                  05/14/02 00:12:49         
+         AGO   .NIT002B                                        V1R2P028         
+.NIT002A ANOP  ,                                               V1R2P028         
+         MVC   WR0OPNIT,=H'1'      Item count = 1.             V1R2P028         
+.NIT002B ANOP  ,                                               V1R2P028         
+./ R 01339000 01340000 $ 1339590 590                  05/14/02 00:12:49         
+         LINEDIT SUB=(DEC,(R3)),                               V1R2P028X        
+               TEXT='Unexpected error from (E)STATEW.  RC=..'  V1R2P028         
+./ I 01509990          $ 1510010 20                   05/14/02 00:12:49         
+         AIF   (&CMSLVL GE 1).USEPLU0 Use DMSPLU for &CMSLVL>0 V1R2P028         
+*  Use old pre-P018 code to set non-EDF file date.             V1R2P028         
+         DMSKEY NUCLEUS            * * * * * * * * * * * * * * V1R2P028         
+         TM    WRKD0PPM,X'80'      Is this a VM/SP machine?    V1R2P028         
+         BO    ENA005A             Yes, use SSM.               V1R2P028         
+         CLC   WRKD0PPM,=XL8'00'   Is this a VM/370 machine?   V1R2P028         
+         BE    ENA005A             Yes, use SSM.               V1R2P028         
+         TM    X'5EA',X'80'        Is this an XA-mode machine? V1R2P028         
+         BO    ENA005B             Yes, use STNSM.             V1R2P028         
+ENA005A  DS    0H                                              V1R2P028         
+         SSM   =X'00'              Disable in 370 mode.        V1R2P028         
+         B     ENA005C                                         V1R2P028         
+ENA005B  STNSM WRKTEMP,X'00'       Disable in XA mode.         V1R2P028         
+ENA005C  DS    0H                                              V1R2P028         
+         LA    R1,WRKOPLST         FSCB for output file.       V1R2P028         
+         L     R15,VCFSTLKW        FST-lookup (Write) routine. V1R2P028         
+         BALR  R14,R15                                         V1R2P028         
+         LTR   R15,R15             Do we have an FST?          V1R2P028         
+         BNZ   OUCDRST             No, go clean up & exit.     V1R2P028         
+         USING FSTSECT,R1                                      V1R2P028         
+*  Set creation date for non-EDF disk file.                    V1R2P028         
+         UNPK  WRKTEMP2(3),WRKADATI+1(2)  FYFYNM  <==  YYMN.   V1R2P028         
+         MVC   FSTYR,WRKTEMP2      FYFY.                       V1R2P028         
+         MVC   FSTD(4),WRKADATI+2      MMDD, HHMM.             V1R2P028         
+         DROP  R1                                              V1R2P028         
+OUCDRST  DS    0H                                              V1R2P028         
+         LR    R14,R15             Save R15 across DMSKEY      V1R2P028         
+         TM    WRKD0PPM,X'80'      Is this a VM/SP machine?    V1R2P028         
+         BO    ENA006A             Yes, use SSM.               V1R2P028         
+         CLC   WRKD0PPM,=XL8'00'   Is this a VM/370 machine?   V1R2P028         
+         BE    ENA006A             Yes, use SSM.               V1R2P028         
+         TM    X'5EA',X'80'        Is this an XA-mode machine? V1R2P028         
+         BO    ENA006B             Yes, use STOSM.             V1R2P028         
+ENA006A  DS    0H                                              V1R2P028         
+         SSM   =X'FF'              Enable in 370 mode.         V1R2P028         
+         B     ENA006C                                         V1R2P028         
+ENA006B  STOSM WRKTEMP,X'03'       Enable in XA mode.          V1R2P028         
+ENA006C  DS    0H                                              V1R2P028         
+         DMSKEY RESET              * * * * * * * * * * * * * * V1R2P028         
+         LR    R15,R14             Restore R15 after DMSKEY    V1R2P028         
+         LTR   R15,R15             Did we get an FST?          V1R2P028         
+         BNZ   OUCERFST            No, go give error message.  V1R2P028         
+         AGO   .OUCDONE                                        V1R2P028         
+.USEPLU0 ANOP  ,                                               V1R2P028         
+./ I 01525530          $ 1525630 100                  05/14/02 00:12:49         
+.OUCDONE ANOP  ,                                               V1R2P028         
+./ R 03153569          $ 3153574 5                    05/14/02 00:12:49         
+PGMPTF   EQU   28                  Program modification level. V1R2P028         
+./ I 03168000          $ 3168030 30                   05/14/02 00:12:49         
+***********************************************************************         
+*                                                              V1R2P028         
+* DIAG 0 output area                                           V1R2P028         
+*                                                              V1R2P028         
+* Used only to identify if running on a pre-XA version of VM:  V1R2P028         
+*                                                              V1R2P028         
+* VM/370:   WRKD0PPM EQ XL8'00'                                V1R2P028         
+*                                                              V1R2P028         
+* VM/BSEPP, VM/SEPP, VM/SP, VM/HPO:                            V1R2P028         
+*           TM  WRKD0PPM,X'80'                                 V1R2P028         
+*           BO  NOTXA                                          V1R2P028         
+*                                                              V1R2P028         
+***********************************************************************         
+WRKDIAG0 DS    0XL64               DIAG 0 output area.         V1R2P028         
+WRKD0SID DS    CL8                 System Name.                V1R2P028         
+WRKD0VSI DS    0XL3                System version info.        V1R2P028         
+WRKD0VSN DS    X                   Version Number.             V1R2P028         
+WRKD0LVL DS    X                   Level.                      V1R2P028         
+WRKD0PLC DS    X                   PLC number.                 V1R2P028         
+WRKD0STI DS    X                   STIDP version code.         V1R2P028         
+WRKD0MCL DS    XL2                 STIDP MCEL.                 V1R2P028         
+WRKD0PRA DS    XL2                 STAP processor address.     V1R2P028         
+WRKD0UID DS    CL8                 Current user id.            V1R2P028         
+WRKD0PPM DS    XL8                 Program Product Bit Map.    V1R2P028         
+WRKD0FIL DS    XL32                Post-VM/370 DIAG 0 fields.  V1R2P028         
+*                                                              V1R2P028         
+./ I 03203500          $ 3203700 200                  05/14/02 00:12:49         
+WRKTEMP2 DS    D               Temporary doubleword #2.        V1R2P028         
+./ R 03317000          $ 3317490 490                  05/14/02 00:12:49         
+WR0IPITM DS    H'0'             CMS < 1: Item number to read.  V1R2P028         
+./ R 03322000          $ 3322490 490                  05/14/02 00:12:49         
+WR0IPNIT DS    H'0'             CMS < 1: No. of items to read. V1R2P028         
+./ R 03360000          $ 3360490 490                  05/14/02 00:12:49         
+WR0OPITM DS    H'0'             CMS < 1: Item number to read.  V1R2P028         
+./ R 03365000          $ 3365490 490                  05/14/02 00:12:49         
+WR0OPNIT DS    H'0'             CMS < 1: No. of items to read. V1R2P028         
+./ R 03393000          $ 3393490 490                  05/14/02 00:12:49         
+WRKESLST DS    0D            (E)STATEW plist.                  V1R2P028         
+./ I 03442000          $ 3442200 200                  05/14/02 00:12:49         
+         AIF   (&CMSLVL GE 1).SUP001A                          V1R2P028         
+         PRINT NOGEN                                           V1R2P028         
+.SUP001A ANOP  ,                                               V1R2P028         
+./ I 03448400          $ 3448460 60                   05/14/02 00:12:49         
+         AIF   (&CMSLVL GE 1).HASY2KF                          V1R2P028         
+FSTEPL   EQU   X'00'               EPLIST Flag (Set "Off")     V1R2P028         

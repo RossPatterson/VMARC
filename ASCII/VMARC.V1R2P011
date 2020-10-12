@@ -1,0 +1,8 @@
+./ R 00001950          $ 1960 10                      12/10/91 17:01:54         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.11' V1R2P011 00001960
+./ R 00741490          $ 741680 190                   12/10/91 17:01:54         
+         DC    AL1(C'0'+PGMPTF-10*(PGMPTF/10))                 V1R2P011 00741490
+./ R 02154000          $ 2154490 490                  12/10/91 17:01:54         
+         LR    R14,R0              ..into <AA,A>.              V1R2P011 02154490
+./ R 03152960          $ 3152970 10                   12/10/91 17:01:54         
+PGMPTF   EQU   11                  Program modification level. V1R2P011 03152970

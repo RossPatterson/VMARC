@@ -1,0 +1,32 @@
+./ R 00001690          $ 1780 90                      05/16/90 12:52:31         
+VMARC    TITLE  '--  CMS File Compaction Utility  --  V1.2.6'  V1R2P006 00001780
+./ R 01822000 01823000 $ 1822590 590                  05/16/90 12:52:31         
+         L     R3,WRKIBLEN         Length of first input recordV1R2P006 01822590
+         S     R3,WRKNDXIN         Length remaining after headeV1R2P006 01823180
+./ R 01834990          $ 1835980 990                  05/16/90 12:52:31         
+         LM    R4,R6,=A(X'00000FFF',X'000FFFFF',X'0000FFFF')   V1R2P006 01834990
+./ R 01839180          $ 1839570 390                  05/16/90 12:52:31         
+         CH    R3,=H'2'            Long enough for endfile testV1R2P006 01839570
+./ R 01851000          $ 1851490 490                  05/16/90 12:52:31         
+         A     R3,WRKIBLEN         Accumulate total byte count.V1R2P006 01851490
+./ R 01864000 01865000 $ 1864390 390                  05/16/90 12:52:31         
+         SR    R2,R2               Clear for divide.           V1R2P006 01864390
+         D     R2,=F'3'            Comput byte count modulo 3. V1R2P006 01864780
+         LR    R3,R2               Mod-3 count determine mask. V1R2P006 01865170
+         EX    R3,SKS2INST         Test for final end-file codeV1R2P006 01865560
+./ R 02255000 02256000 $ 2255590 590                  05/16/90 12:52:31         
+         L     R3,WRKIBLEN         Length of first input recordV1R2P006 02255590
+         S     R3,WRKNDXIN         Length remaining after headeV1R2P006 02256180
+./ R 02267990          $ 2268980 990                  05/16/90 12:52:31         
+         LM    R4,R6,=A(X'00000FFF',X'000FFFFF',X'0000FFFF')   V1R2P006 01834990
+./ R 02272180          $ 2272570 390                  05/16/90 12:52:31         
+         CH    R3,=H'2'            Long enough for endfile testV1R2P006 02272570
+./ R 02284000          $ 2284490 490                  05/16/90 12:52:31         
+         A     R3,WRKIBLEN         Accumulate total byte count.V1R2P006 02284490
+./ R 02297000 02298000 $ 2297390 390                  05/16/90 12:52:31         
+         SR    R2,R2               Clear for divide.           V1R2P006 02297390
+         D     R2,=F'3'            Comput byte count modulo 3. V1R2P006 02297780
+         LR    R3,R2               Mod-3 count determine mask. V1R2P006 02298170
+         EX    R3,SKLZINST         Test for final end-file codeV1R2P006 02298560
+./ R 03152790          $ 3152880 90                   05/16/90 12:52:31         
+PGMPTF   EQU   6                   Program modification level. V1R2P006 03152880
