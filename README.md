@@ -5,6 +5,8 @@ Years ago, John Fisher at Rensselaer Polytechnic Institute wrote the canonical C
 
 I haven't worked with a VM/CMS system since 2002, but it appears that there haven't been any updates to VMARC since then.  Talk about stable software!  This code was originally hosted on GeoCities at http://www.GeoCities.com/RossPatterson/vmarc.
 
+Because I can't guess how EBCDIC source files will be translated in a vintage 2020 Internet, I've uploaded the full source in the original EBCDIC to ./EBCDIC, and translated to ASCII in ./ASCII.  When in doubt, rely on the ./EBCDIC files.
+
 ## "Recent" Updates To VMARC 
 
 The following updates have been issued "recently" (_i.e._ since I took over maintenance in 1998).  They apply on top of VMARC ASSEMBLE and all the prior updates (V1R2P002 through V1R2P020).
