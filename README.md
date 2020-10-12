@@ -7,7 +7,28 @@ I haven't worked with a VM/CMS system since 2002, but it appears that there have
 
 Because I can't guess how EBCDIC source files will be translated in a vintage 2020 Internet, I've uploaded the full source in the original EBCDIC to ./EBCDIC, and translated to ASCII in ./ASCII.  When in doubt, rely on the ./EBCDIC files.
 
-## "Recent" Updates To VMARC 
+## Licensing
+
+John Fisher released his original code in 1989, long before the computing community became obsessed with licensing, before there was even a GNU Public License.  As a result, this repository is not covered by any Free Software or Open Source license, but is rather simply copyrighted code with rights granted from its original author.  John's original source file (VMARC ASSEMBLE) contains the following notice:
+
+> Copyright (c) 1989, 1990, John S. Fisher, Troy, NY.
+> Copyright (C) 1980 Columbia University, Carl Klass and Jeff Damens, CUCCA User Services, 12/80
+>
+> Permission is granted to use, copy, and distribute this program in any form as long as (1) this notice of copyright and distribution policy remain intact, (2) the distribution is made without charge above and beyond any reasonable fee to cover costs in making and delivering the copy, and (3) no additional restrictions are im-posed, either as to distribution or as to use.
+>
+> Note:  Specific permission is granted to Eric Thomas to use this program in his "Revised Listserv" program product, and to distribute this program as part of Listserv, whether or not any fee is collected.  Moreover, Eric Thomas may, at his discretion, modify the distribution policy stated above to prohibit redistribution of copies obtained as part of his Listserv product.
+
+Similarly, his original documentation (VMARC SCRIPT) contains the following notice:
+
+> Copyright (c) 1989, 1990, John S. Fisher, Troy, NY.
+>
+> Permission is granted to copy and distribute this documentation in any form to any one as long as (1) this notice of copyright and distribution policy remain intact, (2) the distribution is made without charge above and beyond any reasonable fee to cover costs in making and delivering the copy, and (3) no additional restrictions are imposed, either as to use or as to distribution.
+>
+> Permission is also granted to incorporate this program into other products, either as a tool used to package a product or as an added function to a product, as long as the presence of this program in the product does not contribute to the selling price of the product in any substantial way.
+
+The VM Community has always honored John's wish.  We have shared his code widely, we have made small modifications as needed, and as far as I know, nobody has ever charged money for it or used it as the basis for any significant portion of some product.  Please do the same.
+
+## "Recent" Updates To VMARC
 
 The following updates have been issued "recently" (_i.e._ since I took over maintenance in 1998).  They apply on top of VMARC ASSEMBLE and all the prior updates (V1R2P002 through V1R2P020).
 * Update VMARC V1R2P028, to support VM/370 R6 (for Hercules _et al._), courtesy of Peter J. Farley III (pjfarley3@yahoo.com).  Released 2002-05-14.
